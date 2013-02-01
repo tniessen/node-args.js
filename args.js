@@ -23,7 +23,7 @@ module.exports = function(newParams){
      * This is a string describing the args.js
      * version in format x.x.x.
      */
-    version: '0.0.1',
+    version: '0.0.2',
     /**
      * ### args.setParameters(parameters)
      * Sets and prepares the given parameters
@@ -32,7 +32,7 @@ module.exports = function(newParams){
     setParameters: function(newParams){
       params = newParams;
       for(var i = 0; i < params.length; i++){
-        params[i].id = typeof params[i].id !== 'undefined' ? params[i].id.toLowerCase() : i.toString();
+        params[i].id = typeof params[i].id !== 'undefined' ? params[i].id : i.toString();
         params[i].name = params[i].name || params[i].id;
         params[i].flagged = typeof params[i].flags !== 'undefined' &&
                             typeof params[i].flags.length !== 'undefined' &&

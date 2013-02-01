@@ -72,3 +72,15 @@ Synonym for args.getUsage()
 
 ### args.help()
 Synonym for args.getHelp()
+
+
+Changelog
+---------
+
+**0.0.1**
+ - Supports flagged, unflagged, greedy options and switches
+ - Automated &amp; customizable help mechanism
+
+**0.0.2**
+ - Removed parameter identifier transformation to allow camel case.
+
