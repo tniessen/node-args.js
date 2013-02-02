@@ -23,7 +23,7 @@ module.exports = function(newParams){
      * This is a string describing the args.js
      * version in format x.x.x.
      */
-    version: '0.0.2',
+    version: '0.1.0',
     /**
      * ### args.setParameters(parameters)
      * Sets and prepares the given parameters
@@ -146,28 +146,42 @@ module.exports = function(newParams){
       return null;
     },
     /**
-     * ### args.putDefaults(result)
+     * ### args.putDefaults(result, trackSource)
      * Sets all empty option values on the
      * given object to the default values.
      */
-    putDefaults: function(result){
+    putDefaults: function(result, trackSource){
       var id;
       for(var i = 0; i < params.length; i++){
         id = params[i].id;
-        if(typeof result[id] == 'undefined')
+        if(typeof result[id] == 'undefined'){
+          if(trackSource){
+            if(params[i].defaultValue === null)
+              result.$sources[id] = 'none';
+            else
+              result.$sources[id] = 'default';
+          }
           result[id] = params[i].defaultValue;
+        }
       }
     },
     /**
-     * ### args.parse()
+     * ### args.parse(args, trackSource)
      * Parses the given arguments and returns
-     * an object containing the result.
+     * an object containing the result. If
+     * trackSource was passed and set to true
+     * the result will have an extra field
+     * *$sources*, a map for all options with
+     * values 'none', 'default' or 'user'.
      */
-    parse: function(args){
+    parse: function(args, trackSource){
       if(typeof args == 'undefined')
         args = process.argv.slice(2);
 
       var result = {};
+
+      if(trackSource)
+        result.$sources = {};
 
       // Special options will disable some checks
       var specialSet = false;
@@ -220,10 +234,12 @@ module.exports = function(newParams){
             throw 'Duplicated parameter: ' + param.id;
           result[param.id] = value;
         }
+        if(trackSource)
+          result.$sources[param.id] = 'user';
       }
 
       // Put default values
-      parser.putDefaults(result);
+      parser.putDefaults(result, trackSource);
 
       if(!specialSet){
         // Check whether all required parameters are set
