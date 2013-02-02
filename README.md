@@ -61,7 +61,7 @@ Returns the n-th unflagged option or null.
 ### args.putDefaults(result)
 Sets all empty option values on the given object to the default values.
 
-### args.parse()
+### args.parse(args, trackSource)
 Parses the given arguments and returns an object containing the result.
 
 ### args.params(newParams)
@@ -77,10 +77,14 @@ Synonym for args.getHelp()
 Changelog
 ---------
 
-**0.0.1**
- - Supports flagged, unflagged, greedy options and switches
- - Automated &amp; customizable help mechanism
+**0.1.0**
+ - Tested &amp; stable release
+ - Added *trackSource* option to *parse(args, trackSource)*
 
 **0.0.2**
  - Removed parameter identifier transformation to allow camel case.
+
+**0.0.1**
+ - Supports flagged, unflagged, greedy options and switches
+ - Automated &amp; customizable help mechanism
 
