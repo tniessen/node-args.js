@@ -23,7 +23,7 @@ module.exports = function(newParams){
      * This is a string describing the args.js
      * version in format x.x.x.
      */
-    version: '0.1.0',
+    version: '0.1.1',
     /**
      * ### args.setParameters(parameters)
      * Sets and prepares the given parameters
