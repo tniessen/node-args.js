@@ -77,6 +77,9 @@ Synonym for args.getHelp()
 Changelog
 ---------
 
+**0.1.1**
+ - Changed error messages to show parameter names instead of identifiers
+
 **0.1.0**
  - Tested &amp; stable release
  - Added *trackSource* option to *parse(args, trackSource)*
