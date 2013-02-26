@@ -231,7 +231,7 @@ module.exports = function(newParams){
         }
         else{
           if(typeof result[param.id] != 'undefined')
-            throw 'Duplicated parameter: ' + param.id;
+            throw 'Duplicated parameter: ' + param.name;
           result[param.id] = value;
         }
         if(trackSource)
@@ -246,7 +246,7 @@ module.exports = function(newParams){
         for(var i = 0; i < params.length; i++){
           var id = params[i].id;
           if(params[i].required && (typeof result[id] == 'undefined' || result[id] === null))
-            throw 'Missing parameter: ' + id;
+            throw 'Missing parameter: ' + params[i].name;
         }
       }
 
