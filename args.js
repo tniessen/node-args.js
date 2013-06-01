@@ -23,7 +23,7 @@ module.exports = function(newParams){
      * This is a string describing the args.js
      * version in format x.x.x.
      */
-    version: '0.1.1',
+    version: '0.2.0',
     /**
      * ### args.setParameters(parameters)
      * Sets and prepares the given parameters
@@ -109,7 +109,6 @@ module.exports = function(newParams){
      * with the given identifier.
      */
     getParameterById: function(id){
-      id = id.toLowerCase();
       for(var i = 0; i < params.length; i++)
         if(params[i].id === id)
           return params[i];
@@ -121,11 +120,10 @@ module.exports = function(newParams){
      * with the given flag.
      */
     getParameterByFlag: function(flag){
-      flag = flag.toLowerCase();
       for(var i = 0; i < params.length; i++)
         if(params[i].flagged)
           for(var j = 0; j < params[i].flags.length; j++)
-            if(params[i].flags[j].toLowerCase() === flag)
+            if(params[i].flags[j] === flag)
               return params[i];
       return null;
     },
@@ -146,42 +144,45 @@ module.exports = function(newParams){
       return null;
     },
     /**
-     * ### args.putDefaults(result, trackSource)
+     * ### args.putDefaults(result, track)
      * Sets all empty option values on the
      * given object to the default values.
      */
-    putDefaults: function(result, trackSource){
+    putDefaults: function(result, track){
       var id;
       for(var i = 0; i < params.length; i++){
         id = params[i].id;
         if(typeof result[id] == 'undefined'){
-          if(trackSource){
+          if(track){
             if(params[i].defaultValue === null)
-              result.$sources[id] = 'none';
+              result.$.source[id].type = 'none';
             else
-              result.$sources[id] = 'default';
+              result.$.source[id].type = 'default';
           }
           result[id] = params[i].defaultValue;
         }
       }
     },
     /**
-     * ### args.parse(args, trackSource)
+     * ### args.parse(args, options)
      * Parses the given arguments and returns
-     * an object containing the result. If
-     * trackSource was passed and set to true
-     * the result will have an extra field
-     * *$sources*, a map for all options with
-     * values 'none', 'default' or 'user'.
+     * an object containing the result.
      */
-    parse: function(args, trackSource){
+    parse: function(args, options){
+      if(typeof options != 'object') {
+        options = { track: options };
+      }
       if(typeof args == 'undefined')
         args = process.argv.slice(2);
 
       var result = {};
 
-      if(trackSource)
-        result.$sources = {};
+      if(options.track)
+        result.$ = { source: {} };
+
+      for(var i = 0; i < params.length; i++) {
+        result.$.source[params[i].id] = { type: 'none' };
+      }
 
       // Special options will disable some checks
       var specialSet = false;
@@ -234,12 +235,22 @@ module.exports = function(newParams){
             throw 'Duplicated parameter: ' + param.name;
           result[param.id] = value;
         }
-        if(trackSource)
-          result.$sources[param.id] = 'user';
+        if(options.track) {
+          result.$.source[param.id].type = 'user';
+          if(param.multiple || param.greedy) {
+            if(typeof result.$.source[param.id].index == 'undefined') {
+              result.$.source[param.id].index = [ i ];
+            }
+            else
+              result.$.source[param.id].index.push(i);
+          } else {
+            result.$.source[param.id].index = i;
+          }
+        }
       }
 
       // Put default values
-      parser.putDefaults(result, trackSource);
+      parser.putDefaults(result, options.track);
 
       if(!specialSet){
         // Check whether all required parameters are set
