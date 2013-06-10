@@ -30,21 +30,24 @@ module.exports = function(newParams){
      * as the accepted options.
      */
     setParameters: function(newParams){
-      params = newParams;
-      for(var i = 0; i < params.length; i++){
-        params[i].id = typeof params[i].id !== 'undefined' ? params[i].id : i.toString();
-        params[i].name = params[i].name || params[i].id;
-        params[i].flagged = typeof params[i].flags !== 'undefined' &&
-                            typeof params[i].flags.length !== 'undefined' &&
-                            params[i].flags.length > 0;
-        params[i].isSwitch = params[i].isSwitch || false;
-        params[i].special = params[i].special || false;
-        params[i].greedy = (!params[i].flagged && params[i].greedy) || false;
-        params[i].multiple = (params[i].flagged && params[i].multiple) || false;
-        params[i].defaultValue = params[i].defaultValue || (params[i].isSwitch ? false : null);
-        params[i].help = params[i].help || null;
-        params[i].usage = params[i].usage || null;
-        params[i].required = params[i].required || false;
+      params = [];
+      for(var i = 0; i < newParams.length; i++){
+        var par = {}, npar = newParams[i];
+        par.id = typeof npar.id !== 'undefined' ? npar.id : String(i);
+        par.name = npar.name || par.id;
+        par.flagged = npar.flags != null && Array.isArray(npar.flags)
+                        && npar.flags.length > 0;
+        par.flags = par.flagged ? npar.flags : null;
+        par.isSwitch = par.flagged && !!npar.isSwitch;
+        par.optionalValue = !!(par.isSwitch && npar.optionalValue);
+        par.special = !!npar.special;
+        par.greedy = (!par.flagged && npar.greedy);
+        par.multiple = (par.flagged && npar.multiple);
+        par.defaultValue = npar.defaultValue || (par.isSwitch && !par.multiple ? false : null);
+        par.help = npar.help || null;
+        par.usage = npar.usage || null;
+        par.required = !!npar.required;
+        params.push(par);
       }
     },
     /**
@@ -84,7 +87,7 @@ module.exports = function(newParams){
         if(par.greedy)
           usage += '...';
       }
-      return usage;  
+      return usage;
     },
     /**
      * ### args.getHelp()
@@ -133,8 +136,7 @@ module.exports = function(newParams){
      * or null.
      */
     getUnflaggedParameter: function(n){
-      var count = 0,
-          param;
+      var count = 0;
       for(var i = 0; i < params.length; i++){
         var param = params[i];
         if(!param.flagged)
@@ -154,7 +156,12 @@ module.exports = function(newParams){
         id = params[i].id;
         if(typeof result[id] == 'undefined'){
           if(track){
-            if(params[i].defaultValue === null)
+            // Well, this is complicated
+            var notAValue = params[i].defaultValue === null
+                          ||  (params[i].isSwitch &&
+                                (params[i].optionalValue ||
+                                  params[i].defaultValue === false));
+            if(notAValue)
               result.$.source[id].type = 'none';
             else
               result.$.source[id].type = 'default';
@@ -168,85 +175,201 @@ module.exports = function(newParams){
      * Parses the given arguments and returns
      * an object containing the result.
      */
-    parse: function(args, options){
-      if(typeof options != 'object') {
-        options = { track: options };
-      }
-      if(typeof args == 'undefined')
-        args = process.argv.slice(2);
+    parse: function(args, options) {
 
+      if(typeof options == 'undefined') {
+        if(Array.isArray(args) || typeof args != 'object') {
+          options = {};
+        } else {
+          options = args;
+          args = null;
+        }
+      }
+
+      if(args == null) {
+        // Use process arguments by default
+        args = options.args || process.argv.slice(2);
+      }
+
+      // Results go here
       var result = {};
 
-      if(options.track)
+      // If the track option is set the returned object
+      // will contain information about the source of
+      // values
+      if(options.track) {
         result.$ = { source: {} };
-
-      for(var i = 0; i < params.length; i++) {
-        result.$.source[params[i].id] = { type: 'none' };
+        for(var i = 0; i < params.length; i++) {
+          result.$.source[params[i].id] = { type: 'none' };
+        }
       }
 
       // Special options will disable some checks
       var specialSet = false;
 
-      // Iterate over all arguments
-      var i = 0, param, flag, value, hasNext = args.length > 0, unflaggedOptionCount = 0;
-      while(hasNext){
-        if(i >= args.length)
-          break;
-        arg = args[i++];
-        hasNext = i < args.length;
-        flag = value = null;
+      // Index of current argument (0 <= i < args.length)
+      var i = 0;
+      // Number of unflagged arguments processed
+      var unflaggedOptionCount = 0;
+
+      // Returns true if there is at least one more argument
+      function hasNext() {
+        return i < args.length - 1;
+      }
+
+      // Sets an option which was read from options.index
+      // (defaults to i)
+      // Also adds source information if necessary and
+      // checks for duplicated options
+      function optionRead(param, value, lOptions) {
+        lOptions = lOptions || {};
+        var index = typeof lOptions.index == 'undefined' ? i : lOptions.index;
+        var sourceType = lOptions.sourceType || 'user';
+        var id = param.id;
+        // Store value
+        if(param.multiple || param.greedy) {
+          if(typeof result[id] == 'undefined') result[id] = [ value ];
+          else result[id].push(value);
+        } else if(typeof result[id] != 'undefined') {
+          throw 'Duplicated option: ' + param.name;
+        } else {
+          result[id] = value;
+        }
+        // Remember special options
+        if(param.special) specialSet = true;
+        // Add source information
+        if(options.track) {
+          result.$.source[id].type = sourceType;
+          if(param.multiple || param.greedy) {
+            if(typeof result.$.source[id].index == 'undefined')
+              result.$.source[id].index = [ index ];
+            else
+              result.$.source[id].index.push(index);
+          } else {
+            result.$.source[id].index = index;
+          }
+        }
+      }
+
+      // Parses an unflagged parameter
+      // Consumes: 1
+      function parseUnflagged() {
+          var value = args[i];
+          var param = parser.getUnflaggedParameter(unflaggedOptionCount++);
+          if(param == null) throw 'No value expected: ' + value;
+          optionRead(param, value);
+          i++;
+      }
+
+      // Returns the parameter associated with the
+      // given flag. Throws if not found.
+      function findParam(flag) {
+        var param = parser.getParameterByFlag(flag);
+        if(param == null) throw 'Unknown option: ' + flag;
+        return param;
+      }
+
+      // Parses a flagged parameter
+      // Consumes: 1/2
+      function parseFlagged() {
+          var arg = args[i];
+          var isShortFlag = arg.charAt(1) !== '-';
+          arg = arg.substring(isShortFlag ? 1 : 2);
+          if(isShortFlag) {
+            for(var j = 0; j < arg.length; j++) {
+              var ch = arg.charAt(j);
+              var param = findParam(ch);
+              var isLast = j == arg.length - 1 ||
+                            arg.charAt(j + 1) == '=' ||
+                            arg.charAt(j + 1) == ':';
+              // -fr -fr:4, -r=4
+              if(isLast) {
+                parseFlaggedParam(arg.substring(j));
+                break;
+              // -Dhello
+              } else if(!param.isSwitch) {
+                parseFlaggedParam(ch + '=' + arg.substring(j + 1), false);
+                break;
+              // -lia
+              } else {
+                parseFlaggedParam(ch, false);
+                // We actually need to go back
+                i--;
+              }
+            }
+          // --test --dir=/home --dir /home
+          } else {
+            parseFlaggedParam(arg);
+          }
+      }
+
+      // Parses a flagged parameter (without ^[-]*)
+      // Consumes: 1/2
+      function parseFlaggedParam(arg, mayConsumeNext) {
+        if(typeof mayConsumeNext == 'undefined')
+          mayConsumeNext = true;
+        var sourceType;
+        var flag, param;
+        var value = null;
+        var chi = arg.indexOf('=');
+        if(chi == -1) chi = arg.indexOf(':');
+        if(chi != -1) {
+          flag = arg.substring(0, chi);
+          value = arg.substring(chi + 1);
+        } else {
+          flag = arg;
+        }
+        // Find the parameter
+        param = findParam(flag);
+        if(param.isSwitch) {
+          // Switches require some logic
+          if(!param.optionalValue && value != null) {
+            // Most switches do not need a value
+            throw 'No value expected: ' + flag;
+          } else if(param.optionalValue && value == null) {
+            if(param.defaultValue !== false) {
+              // Others accept a value and use their default
+              // if none was passed
+              value = param.defaultValue;
+              sourceType = 'default';
+            } else {
+              // This switch takes an optional value but
+              // there is neither a value nor a default
+              value = true;
+              sourceType = 'none';
+            }
+          } else {
+            // But the default switch value is still true
+            if(value == null) value = true;
+          }
+        } else if(value == null) {
+          // We need a value if it is not a switch
+          if(hasNext() && mayConsumeNext) value = args[++i];
+          else throw 'Expected value: ' + flag;
+        }
+        optionRead(param, value, { sourceType: sourceType });
+        i++;
+      }
+
+      // Parses one or more options
+      // Consumes: 1/2
+      function next() {
+        var arg = args[i];
         // Flagged option
         if(arg.indexOf('-') == 0){
-          arg = arg.replace(/^-+/, '');
-          if(arg.indexOf('=') != -1){
-            flag = arg.substring(0, arg.indexOf('='));
-            value = arg.substring(arg.indexOf('=') + 1);
-          }
-          else {
-            flag = arg;
-          }
-          // Find the parameter
-          param = parser.getParameterByFlag(flag);
-          // Check it
-          if(param == null) throw 'Unknown option: ' + flag;
-          if(param.isSwitch){
-            if(value != null) throw 'No value expected: ' + flag;
-            else value = true;
-          }
-          else if(value == null){
-            if(hasNext) value = args[i++];
-            else throw 'Expected value: ' + flag;
-          }
+          parseFlagged();
         }
         // Unflagged option
-        else{
-          value = arg;
-          param = parser.getUnflaggedParameter(unflaggedOptionCount++);
-          if(param == null) throw 'No value expected: ' + value;
+        else {
+          parseUnflagged();
         }
-        if(param.special) specialSet = true;
-        if(param.greedy || param.multiple){
-          if(typeof result[param.id] == 'undefined')
-            result[param.id] = [];
-          result[param.id].push(value);
-        }
-        else{
-          if(typeof result[param.id] != 'undefined')
-            throw 'Duplicated parameter: ' + param.name;
-          result[param.id] = value;
-        }
-        if(options.track) {
-          result.$.source[param.id].type = 'user';
-          if(param.multiple || param.greedy) {
-            if(typeof result.$.source[param.id].index == 'undefined') {
-              result.$.source[param.id].index = [ i ];
-            }
-            else
-              result.$.source[param.id].index.push(i);
-          } else {
-            result.$.source[param.id].index = i;
-          }
-        }
+      }
+
+      if(args.length > 0) {
+        // Parser loop
+        do {
+          next();
+        } while(i < args.length);
       }
 
       // Put default values
