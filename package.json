@@ -1,7 +1,7 @@
 {
   "name": "args.js",
   "main": "./args.js",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "author": "tniessen <tniessen@tnie.de>",
   "description": "Another argument parser for node.js",
   "repository": {
@@ -14,5 +14,8 @@
     "command",
     "parser"
   ],
+  "scripts": {
+    "test": "mocha"
+  },
   "license": "CC BY-NC 3.0"
 }

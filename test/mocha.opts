@@ -1,0 +1,15 @@
+--recursive
+--check-leaks
+--ui tdd
+--reporter spec
+--slow 5
+--timeout 50
+
+test/api.js
+test/creation.js
+test/types.js
+test/multiple.js
+test/track.js
+test/special.js
+test/notations.js
+
