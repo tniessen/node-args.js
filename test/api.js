@@ -30,6 +30,7 @@ suite('API / OOP', function() {
     assert.equal(typeof parser.getParameterUsage, 'function');
     assert.equal(typeof parser.getParameterById, 'function');
     assert.equal(typeof parser.getParameterByFlag, 'function');
+    assert.equal(typeof parser.flags, 'function');
   });
   test('Validators', function() {
     assert.equal(typeof Parser.validators, 'object');

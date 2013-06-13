@@ -13,4 +13,5 @@ test/track.js
 test/special.js
 test/notations.js
 test/validators.js
+test/functions.js
 

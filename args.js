@@ -69,6 +69,23 @@ Parser.prototype.setParameters = function(newParams){
 };
 
 /**
+ * ### parser.flags()
+ * Returns all flags with their parameter identifiers.
+ */
+Parser.prototype.flags = function() {
+  var flags = {};
+  for(var i = 0; i < this._params.length; i++) {
+    if(this._params[i].flagged) {
+      for(var j = 0; j < this._params[i].flags.length; j++) {
+        var flag = this._params[i].flags[j];
+        flags[flag] = this._params[i].id;
+      }
+    }
+  }
+  return flags;
+};
+
+/**
  * ### args.getUsage()
  * Returns a single-line string describing the
  * program usage.
