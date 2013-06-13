@@ -40,7 +40,7 @@ Parser.validators = validators;
 
 
 /**
- * ### args.setParameters(parameters)
+ * ### parser.setParameters(parameters)
  * Sets and prepares the given parameters
  * as the accepted options.
  */
@@ -86,7 +86,7 @@ Parser.prototype.flags = function() {
 };
 
 /**
- * ### args.getUsage()
+ * ### parser.getUsage()
  * Returns a single-line string describing the
  * program usage.
  */
@@ -103,7 +103,7 @@ Parser.prototype.getUsage = function(){
 };
 
 /**
- * ### args.getParameterUsage(parameter)
+ * ### parser.getParameterUsage(parameter)
  * Returns the usage of the given parameter
  * including its flags and the value name.
  */
@@ -127,7 +127,7 @@ Parser.prototype.getParameterUsage = function(par){
 };
 
 /**
- * ### args.getHelp()
+ * ### parser.getHelp()
  * Returns a string containing all option
  * descriptions, flags and default values.
  */
@@ -145,7 +145,7 @@ Parser.prototype.getHelp = function(){
 };
 
 /**
- * ### args.getParameterById(id)
+ * ### parser.getParameterById(id)
  * This function returns the option
  * with the given identifier.
  */
@@ -157,7 +157,7 @@ Parser.prototype.getParameterById = function(id){
 };
 
 /**
- * ### args.getParameterByFlag(flag)
+ * ### parser.getParameterByFlag(flag)
  * Searches and returns the option
  * with the given flag.
  */
@@ -171,7 +171,7 @@ Parser.prototype.getParameterByFlag = function(flag){
 };
 
 /**
- * ### args.getUnflaggedParameter(n)
+ * ### parser.getUnflaggedParameter(n)
  * Returns the n-th unflagged option
  * or null.
  */
@@ -187,7 +187,7 @@ Parser.prototype.getUnflaggedParameter = function(n){
 };
 
 /**
- * ### args.putDefaults(result, track)
+ * ### parser.putDefaults(result, track)
  * Sets all empty option values on the
  * given object to the default values.
  */
@@ -213,7 +213,7 @@ Parser.prototype.putDefaults = function(result, track){
 };
 
 /**
- * ### args.parse(args, options)
+ * ### parser.parse(args, options)
  * Parses the given arguments and returns
  * an object containing the result.
  */
@@ -445,7 +445,7 @@ Parser.prototype.parse = function(args, options) {
 };
 
 /**
- * ### args.params(newParams)
+ * ### parser.params(newParams)
  * Returns the array of accepted options. If
  * the newParams argument was set, the given
  * options will be set.
@@ -458,16 +458,16 @@ Parser.prototype.params = function(newParams){
 };
 
 /**
- * ### args.usage()
- * Synonym for args.getUsage()
+ * ### parser.usage()
+ * Synonym for parser.getUsage()
  */
 Parser.prototype.usage = function(){
   return this.getUsage();
 };
 
 /**
- * ### args.help()
- * Synonym for args.getHelp()
+ * ### parser.help()
+ * Synonym for parser.getHelp()
  */
 Parser.prototype.help = function(){
   return this.getHelp();
