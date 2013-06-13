@@ -9,6 +9,8 @@
  * helpful error messages.
  */
 
+var validators = require('./validators');
+
 /**
  * ### Parser(params)
  * Creates a new argument parser instance with the
@@ -23,11 +25,18 @@ var Parser = function(newParams) {
 };
 
 /**
- * ### Parser.version
+ * ### Parser.VERSION
  * This is a string describing the args.js
  * version in format x.x.x.
  */
 Parser.VERSION = '0.2.0';
+
+/**
+ * ### Parser.validators
+ * This object holds several standard
+ * validators (int, float, RegExp).
+ */
+Parser.validators = validators;
 
 
 /**
@@ -36,6 +45,7 @@ Parser.VERSION = '0.2.0';
  * as the accepted options.
  */
 Parser.prototype.setParameters = function(newParams){
+
   this._params = [];
   for(var i = 0; i < newParams.length; i++){
     var par = {}, npar = newParams[i];
@@ -53,6 +63,7 @@ Parser.prototype.setParameters = function(newParams){
     par.help = npar.help || null;
     par.usage = npar.usage || null;
     par.required = !!npar.required;
+    par.validator = validators.get(npar.validator);
     this._params.push(par);
   }
 };
@@ -242,6 +253,19 @@ Parser.prototype.parse = function(args, options) {
     var index = typeof lOptions.index == 'undefined' ? i : lOptions.index;
     var sourceType = lOptions.sourceType || 'user';
     var id = param.id;
+    // Apply validator
+    if(param.validator) {
+      value = param.validator(value, {
+        param: param,
+        id: id,
+        sourceType: sourceType,
+        index: index,
+        result: result,
+        parser: parser,
+        args: args
+      });
+      if(typeof value == 'undefined') return;
+    }
     // Store value
     if(param.multiple || param.greedy) {
       if(typeof result[id] == 'undefined') result[id] = [ value ];
