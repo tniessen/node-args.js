@@ -31,5 +31,15 @@ suite('API / OOP', function() {
     assert.equal(typeof parser.getParameterById, 'function');
     assert.equal(typeof parser.getParameterByFlag, 'function');
   });
+  test('Validators', function() {
+    assert.equal(typeof Parser.validators, 'object');
+    assert.equal(typeof Parser.validators.get, 'function');
+    assert.equal(typeof Parser.validators.number, 'function');
+    assert.equal(typeof Parser.validators.int, 'function');
+    assert.equal(typeof Parser.validators.enum, 'function');
+    assert.equal(typeof Parser.validators.queue, 'function');
+    assert.equal(typeof Parser.validators.regexp, 'function');
+    assert.equal(typeof Parser.validators.json, 'function');
+  });
 });
 
