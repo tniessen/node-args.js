@@ -1,5 +1,6 @@
 
-var Parser = require('../args.js'),
+var argsjs = require('..'),
+    Parser = argsjs.Parser,
     assert = require('assert');
 
 suite('Validators', function() {
@@ -9,10 +10,10 @@ suite('Validators', function() {
       { id: 'number', flags: [ 'n', 'number' ], validator: 'number' },
       { id: 'int', flags: [ 'i', 'int' ], validator: 'int' },
       { id: 'enum', flags: [ 'e', 'enum' ], validator: [ 'sun', 'moon', 'earth' ] },
-      { id: 'queue', flags: [ 'q', 'queue' ], validator: Parser.validators.queue('int', [ 1, 2, 3 ]) },
+      { id: 'queue', flags: [ 'q', 'queue' ], validator: argsjs.validators.queue('int', [ 1, 2, 3 ]) },
       { id: 'regexp', flags: [ 'r', 'regexp' ], validator: /^(0x)?[0-9a-f]+$/i },
       { id: 'json', flags: [ 'j', 'json' ], validator: 'json' },
-      { id: 'json2', flags: [ 'k', 'json2' ], validator: Parser.validators.json(function(value) {
+      { id: 'json2', flags: [ 'k', 'json2' ], validator: argsjs.validators.json(function(value) {
         if(typeof value.success != 'undefined') {
           throw 'Success property must not be defined';
         }

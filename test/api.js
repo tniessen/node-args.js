@@ -1,5 +1,6 @@
 
-var Parser = require('../args.js'),
+var argsjs = require('..'),
+    Parser = argsjs.Parser,
     assert = require('assert');
 
 suite('API / OOP', function() {
@@ -17,7 +18,7 @@ suite('API / OOP', function() {
     assert(parser.constructor == Parser);
   });
   test('Version', function() {
-    assert(/[0-9]+.[0-9]+.[0-9]+/.test(Parser.VERSION));
+    assert(/[0-9]+.[0-9]+.[0-9]+/.test(argsjs.VERSION));
   });
   test('Functions', function() {
     assert.equal(typeof parser.parse, 'function');
@@ -33,14 +34,14 @@ suite('API / OOP', function() {
     assert.equal(typeof parser.flags, 'function');
   });
   test('Validators', function() {
-    assert.equal(typeof Parser.validators, 'object');
-    assert.equal(typeof Parser.validators.get, 'function');
-    assert.equal(typeof Parser.validators.number, 'function');
-    assert.equal(typeof Parser.validators.int, 'function');
-    assert.equal(typeof Parser.validators.enum, 'function');
-    assert.equal(typeof Parser.validators.queue, 'function');
-    assert.equal(typeof Parser.validators.regexp, 'function');
-    assert.equal(typeof Parser.validators.json, 'function');
+    assert.equal(typeof argsjs.validators, 'object');
+    assert.equal(typeof argsjs.validators.get, 'function');
+    assert.equal(typeof argsjs.validators.number, 'function');
+    assert.equal(typeof argsjs.validators.int, 'function');
+    assert.equal(typeof argsjs.validators.enum, 'function');
+    assert.equal(typeof argsjs.validators.queue, 'function');
+    assert.equal(typeof argsjs.validators.regexp, 'function');
+    assert.equal(typeof argsjs.validators.json, 'function');
   });
 });
 

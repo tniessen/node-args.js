@@ -1,6 +1,6 @@
 {
   "name": "args.js",
-  "main": "./args.js",
+  "main": "./index.js",
   "version": "0.2.0",
   "author": "tniessen <tniessen@tnie.de>",
   "description": "Another argument parser for node.js",

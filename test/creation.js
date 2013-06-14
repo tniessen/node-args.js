@@ -1,5 +1,5 @@
 
-var Parser = require('../args.js'),
+var Parser = require('..').Parser,
     assert = require('assert');
 
 suite('Parser creation', function() {
