@@ -51,7 +51,6 @@ suite('Validators', function() {
     parser = null;
   });
   test('Number', function() {
-    debugger;
     var value;
     assert.doesNotThrow(function() {
       value = parser.parse([ '-n=5' ]).number;
