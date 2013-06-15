@@ -23,13 +23,13 @@ suite('Multiple occurrences', function() {
   test('Forbidden cases', function() {
     assert.throws(function() {
       parser.parse([ '--fs=foo', '--fs=bar' ]);
-    }, /Duplicated/i);
+    }, /Duplicate/i);
     assert.throws(function() {
       parser2.parse([ 'foo', '--fs=fat', 'bar' ]);
     }, /No value expected/i);
     assert.throws(function() {
       parser.parse([ '--ss', '--sm', '--ss' ]);
-    }, /Duplicated/i);
+    }, /Duplicate/i);
   });
   test('Multiple flagged options', function() {
     assert.deepEqual({

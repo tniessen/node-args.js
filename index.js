@@ -30,4 +30,5 @@ module.exports.validators = require('./lib/validators');
  */
 module.exports.Parser = require('./lib/parser.js');
 
+module.exports.ParserError = require('./lib/parser_error.js');
 
