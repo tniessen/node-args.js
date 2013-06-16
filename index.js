@@ -32,3 +32,20 @@ module.exports.Parser = require('./lib/parser.js');
 
 module.exports.ParserError = require('./lib/parser_error.js');
 
+/**
+ * ### argsjs.createParser([params])
+ * Returns a new argument parser which recognizes options
+ * as defined through *params*
+ */
+module.exports.createParser = function(params) {
+  return new module.exports.Parser(params);
+};
+
+/**
+ * ### argsjs.parse(params, [args], [options])
+ * Creates a new Parser and parses the given arguments.
+ */
+module.exports.parse = function(params, args, options) {
+  return new module.exports.Parser(params).parse(args, options);
+};
+
