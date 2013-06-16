@@ -23,10 +23,7 @@ suite('API / OOP', function() {
   test('Functions', function() {
     assert.equal(typeof parser.parse, 'function');
     assert.equal(typeof parser.params, 'function');
-    assert.equal(typeof parser.setParameters, 'function');
-    assert.equal(typeof parser.getHelp, 'function');
     assert.equal(typeof parser.help, 'function');
-    assert.equal(typeof parser.getUsage, 'function');
     assert.equal(typeof parser.usage, 'function');
     assert.equal(typeof parser.getParameterUsage, 'function');
     assert.equal(typeof parser.getParameterById, 'function');
