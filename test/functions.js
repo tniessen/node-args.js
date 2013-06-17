@@ -18,12 +18,12 @@ suite('Other functions', function() {
   });
   test('Parser.flags', function() {
     assert.deepEqual({
-      a: '0',
-      b: '1',
-      bb: '1',
-      c: '2',
-      cc: '2',
-      ccc: '2'
+      a: parser.params()[0],
+      b: parser.params()[1],
+      bb: parser.params()[1],
+      c: parser.params()[2],
+      cc: parser.params()[2],
+      ccc: parser.params()[2]
     }, parser.flags());
   });
   test('argsjs.createParser', function() {
