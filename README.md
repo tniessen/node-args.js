@@ -89,6 +89,18 @@ them through <code>parser.params([ ... ]);</code>.</p>
   <tr><td>validator</td><td>function, array, object, RegExp, string</td><td>This function can check / modify / remove parsed values mapped to this parameter.</td><td>null</td><td>See below: Validators</td></tr>
 </table>
 
+#### More parameter examples
+<p>The following table demonstrates some features of the parser. See above for information about parameter definition and below for details about argument notations.</p>
+<table>
+  <tr><th>Parameter definition</th><th>Example arguments</th></tr>
+  <tr><td><code>{ id: 'inputFile' }</code></td><td><code>test.txt</code></td></tr>
+  <tr><td><code>{ id: 'inputFiles', greedy: true }</code></td><td><code>test.txt summary.txt</code></td></tr>
+  <tr><td><code>{ id: 'outputFile', flags: [ 'o', 'output' ] }</code></td><td><code>-o test.txt</code><br/><code>--output test.txt</code></td></tr>
+  <tr><td><code>{ id: 'optimization', flags: [ 'O', 'optimize' ],<br/>multiple: true }</code></td><td><code>--optimize functions</code><br /><code>--optimize functions --optimize vars</code><br /><code>-O functions -O vars</code><br/><code>-Ofunctions -Ovars</code><br /><code>-O=functions --output:vars</code></td></tr>
+  <tr><td><code>{ id: 'verbose', flags: [ 'v', 'verbose' ],<br/>isSwitch: true }</code></td><td><code>-v</code><br/><code>--verbose</code></td></tr>
+  <tr><td><code>{ id: 'recursion', flags: [ 'r', 'recursive' ],<br/>isSwitch: true, optionalValue: true,<br/>defaultValue: -1, validator: 'int' }</code></td><td><code>-r</code><br/><code>-r:5</code><br/><code>--recursive</code><br/><code>--recursive:5</code></td></tr>
+</table>
+
 
 ## Argument notations
 <p>args.js supports different common option notations. Flagged options and switches can have short and long flags (e.g. <code>-f</code> and <code>--flagged</code>).</p>
@@ -126,7 +138,7 @@ them through <code>parser.params([ ... ]);</code>.</p>
     </td>
   </tr>
 </table>
-<p>Wait, there is more. You can combine some options into a single argument or omit the equal sign for short-flagged options:</p>
+<p>Wait, there is more. You can combine some options (mostly switches) into a single argument or omit the equal sign for short-flagged options:</p>
 <table>
   <tr><th>Notation</th><th>What it means</th></tr>
   <tr><td><code>-rf</code></td><td>Two switches (r, f)</td></tr>
