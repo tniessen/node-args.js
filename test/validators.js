@@ -9,6 +9,8 @@ suite('Validators', function() {
     parser = new Parser([
       { id: 'number', flags: [ 'n', 'number' ], validator: 'number' },
       { id: 'int', flags: [ 'i', 'int' ], validator: 'int' },
+      { id: 'intrange', flags: [ 'intrange' ],
+        validator: argsjs.validators.queue('int', argsjs.validators.range(1, 5)) },
       { id: 'enum', flags: [ 'e', 'enum' ], validator: [ 'sun', 'moon', 'earth' ] },
       { id: 'queue', flags: [ 'q', 'queue' ], validator: argsjs.validators.queue('int', [ 1, 2, 3 ]) },
       { id: 'regexp', flags: [ 'r', 'regexp' ], validator: /^(0x)?[0-9a-f]+$/i },
@@ -91,6 +93,26 @@ suite('Validators', function() {
     assert.throws(function() {
       parser.parse([ '-i=bar' ]);
     }, /Expected/i);
+  });
+  test('Range', function() {
+    assert.doesNotThrow(function() {
+      parser.parse([ '--intrange=1' ]);
+    });
+    assert.doesNotThrow(function() {
+      parser.parse([ '--intrange=2' ]);
+    });
+    assert.doesNotThrow(function() {
+      parser.parse([ '--intrange=5' ]);
+    });
+    assert.throws(function() {
+      parser.parse([ '--intrange=0' ]);
+    }, /Must be between/i);
+    assert.throws(function() {
+      parser.parse([ '--intrange=6' ]);
+    }, /Must be between/i);
+    assert.throws(function() {
+      parser.parse([ '--intrange=20' ]);
+    }, /Must be between/i);
   });
   test('Enum', function() {
     var value;

@@ -258,6 +258,7 @@ with <code>optionalValue</code> property).</p>
   <tr><td>regexp</td><td><code>argsjs.validators.regexp(regexp, [message])</code></td><td>Expects value to match a regular expression</td></tr>
   <tr><td>json</td><td><code>argsjs.validators.json([callback], [message])</code></td><td>Expects value to be valid JSON and returns parsed result. Applies <code>callback</code> to the value.</td></tr>
   <tr><td>queue</td><td><code>argsjs.validators.queue(validators)<br/>argsjs.validators.queue(validator ...)</code></td><td>Applies all validators, one after another.</p></td></tr>
+  <tr><td>range</td><td><code>argsjs.validators.range(a, b, [message])</code></td><td>Expects value to be between a and b (inclusive)</p></td></tr>
 </table>
 <p>There are shorthands for most of these validators:</p>
 <table>
