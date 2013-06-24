@@ -15,7 +15,7 @@
  * This is a string describing the args.js
  * version in format x.x.x.
  */
-module.exports.VERSION = '0.2.0';
+module.exports.VERSION = '0.2.1';
 
 /**
  * ### argsjs.validators
