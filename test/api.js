@@ -18,7 +18,7 @@ suite('API / OOP', function() {
     assert(parser.constructor == Parser);
   });
   test('Version', function() {
-    assert(/[0-9]+.[0-9]+.[0-9]+/.test(argsjs.VERSION));
+    assert(/[0-9]+\.[0-9]+\.[0-9]+/.test(argsjs.VERSION));
   });
   test('Functions', function() {
     assert.equal(typeof parser.parse, 'function');
