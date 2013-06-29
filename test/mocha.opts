@@ -15,4 +15,5 @@ test/notations.js
 test/validators.js
 test/functions.js
 test/callback.js
+test/doubledash.js
 
