@@ -58,15 +58,15 @@ suite('Validators', function() {
     assert.doesNotThrow(function() {
       value = parser.parse([ '-n=5' ]).number;
     });
-    assert.deepEqual(5, value);
+    assert.strictEqual(5, value);
     assert.doesNotThrow(function() {
       value = parser.parse([ '-n=3.14' ]).number;
     });
-    assert.deepEqual(3.14, value);
+    assert.strictEqual(3.14, value);
     assert.doesNotThrow(function() {
       value = parser.parse([ '-n=-6.28' ]).number;
     });
-    assert.deepEqual(-6.28, value);
+    assert.strictEqual(-6.28, value);
     assert.throws(function() {
       parser.parse([ '-n=5.1.2' ]);
     }, /Expected/i);
@@ -82,11 +82,11 @@ suite('Validators', function() {
     assert.doesNotThrow(function() {
       value = parser.parse([ '-i=5' ]).int;
     });
-    assert.deepEqual(5, value);
+    assert.strictEqual(5, value);
     assert.doesNotThrow(function() {
       value = parser.parse([ '-i=-12' ]).int;
     });
-    assert.deepEqual(-12, value);
+    assert.strictEqual(-12, value);
     assert.throws(function() {
       parser.parse([ '-i=3.14' ]);
     }, /Expected/i);
@@ -119,15 +119,15 @@ suite('Validators', function() {
     assert.doesNotThrow(function() {
       value = parser.parse([ '-e=moon' ]).enum;
     });
-    assert.deepEqual('moon', value);
+    assert.strictEqual('moon', value);
     assert.doesNotThrow(function() {
       value = parser.parse([ '-e=sun' ]).enum;
     });
-    assert.deepEqual('sun', value);
+    assert.strictEqual('sun', value);
     assert.doesNotThrow(function() {
       value = parser.parse([ '-e=earth' ]).enum;
     });
-    assert.deepEqual('earth', value);
+    assert.strictEqual('earth', value);
     assert.throws(function() {
       parser.parse([ '-e=saturn' ]);
     }, /Expected/i);
@@ -181,11 +181,11 @@ suite('Validators', function() {
     assert.doesNotThrow(function() {
       value = parser.parse([ '-c=day' ]).custom;
     });
-    assert.deepEqual('bright', value);
+    assert.strictEqual('bright', value);
     assert.doesNotThrow(function() {
       value = parser.parse([ '-c=dark' ]).custom;
     });
-    assert.deepEqual('dark', value);
+    assert.strictEqual('dark', value);
     assert.throws(function() {
       parser.parse([ '-c=midnight' ]);
     }, /Expected/i);
@@ -198,11 +198,11 @@ suite('Validators', function() {
     assert.doesNotThrow(function() {
       value = parser.parse([ '-l=foo' ]).customClass;
     });
-    assert.deepEqual(value, 'foo');
+    assert.strictEqual(value, 'foo');
     assert.doesNotThrow(function() {
       value = parser.parse([ 'foo', 'foo', '-l=bar' ]).customClass;
     });
-    assert.deepEqual(value, 'bar');
+    assert.strictEqual(value, 'bar');
     assert.throws(function() {
       value = parser.parse([ 'foo', '-l=bar' ]);
     }, /Position/i);
@@ -211,9 +211,9 @@ suite('Validators', function() {
     }, /Position/i);
   });
   test('Remove option', function() {
-    assert.deepEqual('123', parser.parse([ ]).removeInvalid);
-    assert.deepEqual('123', parser.parse([ '-z=notANumber' ]).removeInvalid);
-    assert.deepEqual('321', parser.parse([ '-z=321' ]).removeInvalid);
+    assert.strictEqual('123', parser.parse([ ]).removeInvalid);
+    assert.strictEqual('123', parser.parse([ '-z=notANumber' ]).removeInvalid);
+    assert.strictEqual('321', parser.parse([ '-z=321' ]).removeInvalid);
   });
 });
 
