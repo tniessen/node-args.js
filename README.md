@@ -325,3 +325,19 @@ var parser = new Parser([
     }, help: 'Shows this message' }
 </code></pre></p>
 
+
+## Callback style
+
+<p>It is also possible to use callbacks with <code>parser.parse</code>:</p>
+<pre><code>
+parser.parse(function(err, result) {
+  if(err) {
+    console.error(err.message);
+    process.exit(2);
+  }
+  ...
+});
+</code></pre>
+<p>You can pass options and the arguments to parse before or after the
+callback.</p>
+
