@@ -16,7 +16,7 @@ suite('Other functions', function() {
   teardown(function() {
     parser = params = null;
   });
-  test('Parser.flags', function() {
+  test('parser.params.flags', function() {
     assert.deepEqual({
       a: parser.params()[0],
       b: parser.params()[1],
@@ -24,7 +24,18 @@ suite('Other functions', function() {
       c: parser.params()[2],
       cc: parser.params()[2],
       ccc: parser.params()[2]
-    }, parser.flags());
+    }, parser.params.flags());
+  });
+  test('parser.params.assoc', function() {
+    assert.deepEqual({
+      0: parser.params()[0],
+      1: parser.params()[1],
+      2: parser.params()[2]
+    }, parser.params.assoc());
+  });
+  test('parser.params.param', function() {
+    assert.equal(null, parser.params.param('3'));
+    assert.equal(parser.params()[0], parser.params.param('0'));
   });
   test('argsjs.createParser', function() {
     var anotherParser = argsjs.createParser(params);

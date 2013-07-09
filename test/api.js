@@ -26,8 +26,9 @@ suite('API / OOP', function() {
     assert.equal(typeof parser.help, 'function');
     assert.equal(typeof parser.usage, 'function');
     assert.equal(typeof parser.getParameterUsage, 'function');
-    assert.equal(typeof parser.getParameterById, 'function');
-    assert.equal(typeof parser.flags, 'function');
+    assert.equal(typeof parser.params.flags, 'function');
+    assert.equal(typeof parser.params.assoc, 'function');
+    assert.equal(typeof parser.params.param, 'function');
   });
   test('Validators', function() {
     assert.equal(typeof argsjs.validators, 'object');
