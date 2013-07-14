@@ -14,8 +14,5 @@
     "command",
     "parser"
   ],
-  "scripts": {
-    "test": "mocha"
-  },
   "license": "CC BY-NC 3.0"
 }
