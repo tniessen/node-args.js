@@ -96,7 +96,7 @@ them through <code>parser.params([ ... ]);</code>.</p>
   <tr><td><code>{ id: 'inputFile' }</code></td><td><code>test.txt</code></td></tr>
   <tr><td><code>{ id: 'inputFiles', greedy: true }</code></td><td><code>test.txt summary.txt</code></td></tr>
   <tr><td><code>{ id: 'outputFile', flags: [ 'o', 'output' ] }</code></td><td><code>-o test.txt</code><br/><code>--output test.txt</code></td></tr>
-  <tr><td><code>{ id: 'optimization', flags: [ 'O', 'optimize' ],<br/>multiple: true }</code></td><td><code>--optimize functions</code><br /><code>--optimize functions --optimize vars</code><br /><code>-O functions -O vars</code><br/><code>-Ofunctions -Ovars</code><br /><code>-O=functions --output:vars</code></td></tr>
+  <tr><td><code>{ id: 'optimization', flags: [ 'O', 'optimize' ],<br/>multiple: true }</code></td><td><code>--optimize functions</code><br /><code>--optimize functions --optimize vars</code><br /><code>-O functions -O vars</code><br/><code>-Ofunctions -Ovars</code><br /><code>-O=functions --optimize:vars</code></td></tr>
   <tr><td><code>{ id: 'verbose', flags: [ 'v', 'verbose' ],<br/>isSwitch: true }</code></td><td><code>-v</code><br/><code>--verbose</code></td></tr>
   <tr><td><code>{ id: 'recursion', flags: [ 'r', 'recursive' ],<br/>isSwitch: true, optionalValue: true,<br/>defaultValue: -1, validator: 'int' }</code></td><td><code>-r</code><br/><code>-r:5</code><br/><code>--recursive</code><br/><code>--recursive:5</code></td></tr>
 </table>
@@ -239,7 +239,7 @@ console.log(parser.parse([ '-o=foo.js', 'test.js', 'static.js' ], { track: true 
 }
 */</code></pre>
 <p>The <code>type</code> property indicates whether this option has no
-value (<code>'none</code>), its default value (<code>'default'</code>)
+value (<code>'none'</code>), its default value (<code>'default'</code>)
 or a user specified value (<code>'user'</code>). The <code>index</code>
 property is the position of the argument that defined the value,
 therefore it is undefined if the option was not defined by the user.</p>
@@ -338,6 +338,7 @@ parser.parse(function(err, result) {
   ...
 });
 </code></pre>
+<p>Please note that this operation is synchronous.</p>
 <p>You can pass options and the arguments to parse before or after the
 callback.</p>
 
