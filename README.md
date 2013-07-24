@@ -259,6 +259,7 @@ with <code>optionalValue</code> property).</p>
   <tr><td>json</td><td><code>argsjs.validators.json([callback], [message])</code></td><td>Expects value to be valid JSON and returns parsed result. Applies <code>callback</code> to the value.</td></tr>
   <tr><td>queue</td><td><code>argsjs.validators.queue(validators)<br/>argsjs.validators.queue(validator ...)</code></td><td>Applies all validators, one after another.</p></td></tr>
   <tr><td>range</td><td><code>argsjs.validators.range(a, b, [message])</code></td><td>Expects value to be between a and b (inclusive)</p></td></tr>
+  <tr><td>boolean</td><td><code>argsjs.validators.boolean([extended], [message])</code></td><td>Expects value to be a boolean (true/t/on/yes/y, false/f/off/no/n). Set extended to false to allow only true and false.</td></tr>
 </table>
 <p>There are shorthands for most of these validators:</p>
 <table>
@@ -268,6 +269,7 @@ with <code>optionalValue</code> property).</p>
   <tr><td>enum</td><td><pre><code>{ id: 'aTime', validator: [ 'day', 'night' ] }</pre></code></td></tr>
   <tr><td>regexp</td><td><pre><code>{ id: 'anotherTime', validator: /^(day|night)$/i }</pre></code></td></tr>
   <tr><td>json</td><td><pre><code>{ id: 'jsonEncoded', validator: 'json' }</pre></code></td></tr>
+  <tr><td>boolean</td><td><pre><code>{ id: 'happy', validator: 'boolean' }</pre></code></td></tr>
 </table>
 <p>You can even queue shorthands:
 <pre><code>{ id: 'smallInt', validator: argsjs.validators.queue('int', [ 1, 2, 3 ]) }</code></pre></p>

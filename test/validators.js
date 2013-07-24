@@ -21,6 +21,8 @@ suite('Validators', function() {
         }
         return value;
       })},
+      { id: 'boolean', flags: [ 'boolean' ], validator: 'boolean' },
+      { id: 'boolean2', flags: [ 'boolean2' ], validator: argsjs.validators.boolean(false) },
       { id: 'custom', flags: [ 'c', 'custom' ], validator: function(value, option) {
         if(value === 'night' || value === 'dark') {
           return 'dark';
@@ -175,6 +177,72 @@ suite('Validators', function() {
     assert.throws(function() {
       parser.parse([ '-k={ "success": true }' ]);
     }, /Property/i);
+  });
+  test('Boolean', function() {
+    var value;
+    assert.doesNotThrow(function() {
+      value = parser.parse([ '--boolean=false' ]).boolean;
+    });
+    assert.equal(false, value);
+    assert.doesNotThrow(function() {
+      value = parser.parse([ '--boolean=off' ]).boolean;
+    });
+    assert.equal(false, value);
+    assert.doesNotThrow(function() {
+      value = parser.parse([ '--boolean=f' ]).boolean;
+    });
+    assert.equal(false, value);
+    assert.doesNotThrow(function() {
+      value = parser.parse([ '--boolean=no' ]).boolean;
+    });
+    assert.equal(false, value);
+    assert.doesNotThrow(function() {
+      value = parser.parse([ '--boolean=n' ]).boolean;
+    });
+    assert.equal(false, value);
+    assert.doesNotThrow(function() {
+      value = parser.parse([ '--boolean=true' ]).boolean;
+    });
+    assert.equal(true, value);
+    assert.doesNotThrow(function() {
+      value = parser.parse([ '--boolean=on' ]).boolean;
+    });
+    assert.equal(true, value);
+    assert.doesNotThrow(function() {
+      value = parser.parse([ '--boolean=t' ]).boolean;
+    });
+    assert.equal(true, value);
+    assert.doesNotThrow(function() {
+      value = parser.parse([ '--boolean=yes' ]).boolean;
+    });
+    assert.equal(true, value);
+    assert.doesNotThrow(function() {
+      value = parser.parse([ '--boolean=y' ]).boolean;
+    });
+    assert.equal(true, value);
+    assert.throws(function() {
+      parser.parse([ '--boolean=not on' ]);
+    });
+    assert.doesNotThrow(function() {
+      value = parser.parse([ '--boolean2=true' ]).boolean2;
+    });
+    assert.equal(true, value);
+    assert.doesNotThrow(function() {
+      value = parser.parse([ '--boolean2=false' ]).boolean2;
+    });
+    assert.equal(false, value);
+    assert.throws(function() {
+      parser.parse([ '--boolean2=on' ]);
+    });
+    assert.throws(function() {
+      parser.parse([ '--boolean2=off' ]);
+    });
+    assert.throws(function() {
+      parser.parse([ '--boolean2=t' ]);
+    });
+    assert.throws(function() {
+      parser.parse([ '--boolean2=f' ]);
+    });
   });
   test('Custom function', function() {
     var value;
