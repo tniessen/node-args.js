@@ -18,7 +18,7 @@ var validators = require('args.js').validators;   // lib/validators/index.js</co
 
 
 ## Introduction
-<p>Let's start off with a very simple parser which expects exactly one
+Let's start off with a very simple parser which expects exactly one
 option. Save the following code to a file (example.js):
 <pre><code>// Load args.js and its Parser class
 var Parser = require('args.js').Parser;
@@ -38,14 +38,13 @@ Running <code>node example.js test.c</code> prints:
 You can, of course, parse any arguments, not just those passed to the
 Node process:
 <pre><code>var result = parser.parse([ 'test.c' ]);</code></pre>
-</p>
 
 
 ## Parameters
-<p><code>parser.parse</code> tries to map all passed arguments to
+<code>parser.parse</code> tries to map all passed arguments to
 defined parameters. You can set parameter definitions when creating a
 parser (<code>new Parser([ ... ]);</code>) but you may also set / change
-them through <code>parser.params([ ... ]);</code>.</p>
+them through <code>parser.params([ ... ]);</code>.
 
 #### Parameter type examples
 <table>
@@ -90,7 +89,7 @@ them through <code>parser.params([ ... ]);</code>.</p>
 </table>
 
 #### More parameter examples
-<p>The following table demonstrates some features of the parser. See above for information about parameter definition and below for details about argument notations.</p>
+The following table demonstrates some features of the parser. See above for information about parameter definition and below for details about argument notations.
 <table>
   <tr><th>Parameter definition</th><th>Example arguments</th></tr>
   <tr><td><code>{ id: 'inputFile' }</code></td><td><code>test.txt</code></td></tr>
@@ -103,7 +102,7 @@ them through <code>parser.params([ ... ]);</code>.</p>
 
 
 ## Argument notations
-<p>args.js supports different common option notations. Flagged options and switches can have short and long flags (e.g. <code>-f</code> and <code>--flagged</code>).</p>
+args.js supports different common option notations. Flagged options and switches can have short and long flags (e.g. <code>-f</code> and <code>--flagged</code>).
 <table>
   <tr><th>Parameter type</th><th>Examples</th></tr>
   <tr>
@@ -138,7 +137,7 @@ them through <code>parser.params([ ... ]);</code>.</p>
     </td>
   </tr>
 </table>
-<p>Wait, there is more. You can combine some options (mostly switches) into a single argument or omit the equal sign for short-flagged options:</p>
+Wait, there is more. You can combine some options (mostly switches) into a single argument or omit the equal sign for short-flagged options:
 <table>
   <tr><th>Notation</th><th>What it means</th></tr>
   <tr><td><code>-rf</code></td><td>Two switches (r, f)</td></tr>
@@ -148,11 +147,11 @@ them through <code>parser.params([ ... ]);</code>.</p>
   <tr><td><code>-rdfoo</code></td><td>One switch (r), one flagged option (d=foo)</td></tr>
   <tr><td><code>-rfdfoo</code></td><td>Two switches (r, f), one flagged option (d=foo)</td></tr>
 </table>
-<p>Equal signs can be replaced with colons.</p>
+Equal signs can be replaced with colons.
 
 
 ## Error handling
-<p><code>parser.parse</code> throws an error if it cannot parse the given arguments. Consider this example which will print an error message if you do not pass exactly one argument:
+<code>parser.parse</code> throws an error if it cannot parse the given arguments. Consider this example which will print an error message if you do not pass exactly one argument:
 <pre><code>var Parser = require('args.js').Parser;
 var parser = new Parser([
   { id: 'file', required: true }
@@ -162,8 +161,8 @@ try {
 } catch(err) {
   console.error('Invalid arguments: ' + err.message);
   process.exit(1);
-}</code></pre></p>
-<p>Error objects are not just messages but they also hold information and details about the error:
+}</code></pre>
+Error objects are not just messages but they also hold information and details about the error:
 <pre><code>try {
   parser.parse();
 } catch(err) {
@@ -174,27 +173,28 @@ try {
   } else {
     console.error('Invalid arguments: ' + err.message);
   }
-}</code></pre></p>
-<p><code>parser.parse</code> always sets <code>err.message</code>, <code>err.reason</code> and <code>err.parser</code>. Other properties, such as <code>err.param</code>, <code>err.value</code>, <code>err.index</code> and <code>err.flag</code>, depend on the error reason and might be undefined.</p>
+}</code></pre>
+<code>parser.parse</code> always sets <code>err.message</code>, <code>err.reason</code> and <code>err.parser</code>. Other properties, such as <code>err.param</code>, <code>err.value</code>, <code>err.index</code> and <code>err.flag</code>, depend on the error reason and might be undefined.
 
 
 ## Help and usage messages
-<p>args.js provides a simple way to generate help and usage messages:</p>
+args.js provides a simple way to generate help and usage messages:
 <pre><code>function printHelp() {
   console.log('./mytool ' + parser.usage());
   console.log(parser.help());
 }
 </code></pre>
-<p><code>parser.usage</code> returns a single-line string containing all options in the order they were defined.<br />
-<code>parser.help</code> returns a multi-line string containing all options with their help messages and default values.</p>
-<p><strong>Note:</strong> This API will be replaced with a more customizable one in future releases.</p>
+<code>parser.usage</code> returns a single-line string containing all options in the order they were defined.<br />
+<code>parser.help</code> returns a multi-line string containing all options with their help messages and default values.
+
+<strong>Note:</strong> This API will be replaced with a more customizable one in future releases.
 
 
 ## Option source tracking
-<p>Sometimes you might want to know whether a value was specified by the user or not. This can be achieved by setting the <code>track</code> option:</p>
+Sometimes you might want to know whether a value was specified by the user or not. This can be achieved by setting the <code>track</code> option:
 <pre><code>parser.parse({ track: true });
 /* respectively */ parser.parse(args, { track: true });</code></pre>
-<p>This adds a property (<code>$.source</code>) to the returned object which holds information about the sources of returned values.</p>
+This adds a property (<code>$.source</code>) to the returned object which holds information about the sources of returned values.
 <pre><code>var Parser = require('args.js').Parser;
 
 var parser = new Parser([
@@ -238,16 +238,16 @@ console.log(parser.parse([ '-o=foo.js', 'test.js', 'static.js' ], { track: true 
   "outputFile": "foo.js", "inputFiles": [ "test.js", "static.js" ]
 }
 */</code></pre>
-<p>The <code>type</code> property indicates whether this option has no
+The <code>type</code> property indicates whether this option has no
 value (<code>'none'</code>), its default value (<code>'default'</code>)
 or a user specified value (<code>'user'</code>). The <code>index</code>
 property is the position of the argument that defined the value,
-therefore it is undefined if the option was not defined by the user.</p>
+therefore it is undefined if the option was not defined by the user.
 
 ## Validators
-<p>Validators are functions that check, modify or remove passed options.
+Validators are functions that check, modify or remove passed options.
 Default values are not validated (except from default values of switches
-with <code>optionalValue</code> property).</p>
+with <code>optionalValue</code> property).
 
 #### Predefined validators
 <table>
@@ -257,11 +257,11 @@ with <code>optionalValue</code> property).</p>
   <tr><td>enum</td><td><code>argsjs.validators.enum(values, [message])</code></td><td>Expects value to be in <code>values</code> array.</td></tr>
   <tr><td>regexp</td><td><code>argsjs.validators.regexp(regexp, [message])</code></td><td>Expects value to match a regular expression</td></tr>
   <tr><td>json</td><td><code>argsjs.validators.json([callback], [message])</code></td><td>Expects value to be valid JSON and returns parsed result. Applies <code>callback</code> to the value.</td></tr>
-  <tr><td>queue</td><td><code>argsjs.validators.queue(validators)<br/>argsjs.validators.queue(validator ...)</code></td><td>Applies all validators, one after another.</p></td></tr>
-  <tr><td>range</td><td><code>argsjs.validators.range(a, b, [message])</code></td><td>Expects value to be between a and b (inclusive)</p></td></tr>
+  <tr><td>queue</td><td><code>argsjs.validators.queue(validators)<br/>argsjs.validators.queue(validator ...)</code></td><td>Applies all validators, one after another.</td></tr>
+  <tr><td>range</td><td><code>argsjs.validators.range(a, b, [message])</code></td><td>Expects value to be between a and b (inclusive)</td></tr>
   <tr><td>boolean</td><td><code>argsjs.validators.boolean([extended], [message])</code></td><td>Expects value to be a boolean (true/t/on/yes/y, false/f/off/no/n). Set extended to false to allow only true and false.</td></tr>
 </table>
-<p>There are shorthands for most of these validators:</p>
+There are shorthands for most of these validators:
 <table>
   <tr><th>Name</th><th>Shorthand example</th></tr>
   <tr><td>number</td><td><pre><code>{ id: 'aNumber', validator: 'number' }</pre></code></td></tr>
@@ -271,17 +271,17 @@ with <code>optionalValue</code> property).</p>
   <tr><td>json</td><td><pre><code>{ id: 'jsonEncoded', validator: 'json' }</pre></code></td></tr>
   <tr><td>boolean</td><td><pre><code>{ id: 'happy', validator: 'boolean' }</pre></code></td></tr>
 </table>
-<p>You can even queue shorthands:
-<pre><code>{ id: 'smallInt', validator: argsjs.validators.queue('int', [ 1, 2, 3 ]) }</code></pre></p>
+You can even queue shorthands:
+<pre><code>{ id: 'smallInt', validator: argsjs.validators.queue('int', [ 1, 2, 3 ]) }</code></pre>
 
 #### Custom validators
-<p>This parameter has a small validator that only accepts 'day' and 'night':
+This parameter has a small validator that only accepts 'day' and 'night':
 <pre><code>{ id: 'time', validator: function(value) {
   if(value === 'day' || value === 'night') {
     return value;
   } else throw 'Expected "day" or "night"';
-}, flags: [ 't', 'time' ] }</code></pre></p>
-<p>Validators are just functions. They can take up to two arguments: <code>value</code> and
+}, flags: [ 't', 'time' ] }</code></pre>
+Validators are just functions. They can take up to two arguments: <code>value</code> and
 <code>data</code>. <code>data</code> is an object with the following
 properties:
 <ul>
@@ -292,11 +292,12 @@ properties:
   <li><code>result</code> result object as returned by <code>parser.parse</code></li>
   <li><code>parser</code> <code>argsjs.Parser</code> instance</li>
   <li><code>args</code> arguments passed to <code>parser.parse</code></li>
-</ul></p>
-<p>If a validator returns no value (undefined) the operation will be
+</ul>
+If a validator returns no value (undefined) the operation will be
 cancelled and the current value dropped. The parser proceeds with the
-next option.</p>
-<p>You can also use objects (including instances of classes) which have
+next option.
+
+You can also use objects (including instances of classes) which have
 a <code>validate</code> function:
 <pre><code>var Parser = require('args.js').Parser;
 
@@ -313,10 +314,10 @@ var ListValidator = (function() {
 var parser = new Parser([
   { id: 'ports', validator: new ListValidator(), flags: [ 'p', 'ports' ] }
 ]);
-</pre></code></p>
+</pre></code>
 
 #### Actions
-<p>In some cases it might be useful to use validators as actions:
+In some cases it might be useful to use validators as actions:
 <pre><code>
 { id: 'help', flags: [ 'help' ], isSwitch: true, special: true,
     validator: function() {
@@ -325,12 +326,12 @@ var parser = new Parser([
       console.log(data.parser.help().replace(/(^|\n)/g, '$1    '));
       process.exit(0);
     }, help: 'Shows this message' }
-</code></pre></p>
+</code></pre>
 
 
 ## Callback style
 
-<p>It is also possible to use callbacks with <code>parser.parse</code>:</p>
+It is also possible to use callbacks with <code>parser.parse</code>:
 <pre><code>
 parser.parse(function(err, result) {
   if(err) {
@@ -340,7 +341,8 @@ parser.parse(function(err, result) {
   ...
 });
 </code></pre>
-<p>Please note that this operation is synchronous.</p>
-<p>You can pass options and the arguments to parse before or after the
-callback.</p>
+Please note that this operation is synchronous.
+
+You can pass options and the arguments to parse before or after the
+callback.
 
