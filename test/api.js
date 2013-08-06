@@ -24,8 +24,6 @@ suite('API / OOP', function() {
     assert.equal(typeof parser.parse, 'function');
     assert.equal(typeof parser.params, 'function');
     assert.equal(typeof parser.help, 'function');
-    assert.equal(typeof parser.usage, 'function');
-    assert.equal(typeof parser.getParameterUsage, 'function');
     assert.equal(typeof parser.params.flags, 'function');
     assert.equal(typeof parser.params.assoc, 'function');
     assert.equal(typeof parser.params.param, 'function');
