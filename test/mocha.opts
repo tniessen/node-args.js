@@ -1,19 +1,17 @@
---recursive
 --check-leaks
---ui tdd
+--ui bdd
 --reporter spec
---slow 5
+--slow 10
 --timeout 50
+--require chai
 
-test/api.js
-test/creation.js
-test/types.js
-test/multiple.js
-test/track.js
-test/special.js
-test/notations.js
+test/module.js
+test/parser-constructor.js
+test/parser-instances.js
+test/parser-parse.js
+test/parser-params.js
 test/validators.js
-test/functions.js
-test/callback.js
 test/doubledash.js
-
+test/special.js
+test/tracking.js
+test/error.js

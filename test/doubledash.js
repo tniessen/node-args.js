@@ -1,30 +1,26 @@
 
 var Parser = require('..').Parser,
-    assert = require('assert');
+    expect = require('chai').expect;
 
-suite('Double dash (--)', function() {
+describe('Two dashes', function() {
   var parser;
-  setup(function() {
+  before(function() {
     parser = new Parser([
       { id: 'noCompression', flags: [ '0', 'no-compression' ], isSwitch: true },
       { id: 'latitude', required: true },
       { id: 'longitude', required: true }
     ]);
   });
-  teardown(function() {
+  after(function() {
     parser = null;
   });
-  test('Marks the end of flagged options', function() {
-    assert.deepEqual({
+  it('should mark the end of flagged options', function() {
+    var result = parser.parse([ '-0', '--', '-37', '12' ]);
+    expect(result).to.deep.equal({
       noCompression: true,
       latitude: '-37',
       longitude: '12'
-    }, parser.parse([ '-0', '--', '-37', '12' ]));
-    assert.deepEqual({
-      noCompression: true,
-      latitude: '-0',
-      longitude: '-0'
-    }, parser.parse([ '-0', '--', '-0', '-0' ]));
+    });
   });
 });
 

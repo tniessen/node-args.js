@@ -1,25 +1,25 @@
 
 var Parser = require('..').Parser,
-    assert = require('assert');
+    expect = require('chai').expect;
 
-suite('Special parameters', function() {
+describe('Special parameters', function() {
   var parser;
-  setup(function() {
+  before(function() {
     parser = new Parser([
       { id: 'files', required: true },
       { id: 'help', flags: [ 'h', 'help' ], special: true, isSwitch: true }
     ]);
   });
-  teardown(function() {
+  after(function() {
     parser = null;
   });
-  test('Skip check for required options', function() {
-    assert.throws(function() {
+  it('should skip checks for required options', function() {
+    expect(function() {
       parser.parse([ ]);
-    }, /Missing/);
-    assert.doesNotThrow(function() {
+    }).to.throw(/Missing/);
+    expect(function() {
       parser.parse([ '--help' ]);
-    });
+    }).to.not.throw();
   });
 });
 

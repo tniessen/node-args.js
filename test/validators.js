@@ -1,287 +1,397 @@
 
 var argsjs = require('..'),
     Parser = argsjs.Parser,
-    assert = require('assert');
+    validators = argsjs.validators,
+    expect = require('chai').expect;
 
-suite('Validators', function() {
+describe('Parameter validators', function() {
   var parser;
-  setup(function() {
-    parser = new Parser([
-      { id: 'number', flags: [ 'n', 'number' ], validator: 'number' },
-      { id: 'int', flags: [ 'i', 'int' ], validator: 'int' },
-      { id: 'intrange', flags: [ 'intrange' ],
-        validator: argsjs.validators.queue('int', argsjs.validators.range(1, 5)) },
-      { id: 'enum', flags: [ 'e', 'enum' ], validator: [ 'sun', 'moon', 'earth' ] },
-      { id: 'queue', flags: [ 'q', 'queue' ], validator: argsjs.validators.queue('int', [ 1, 2, 3 ]) },
-      { id: 'regexp', flags: [ 'r', 'regexp' ], validator: /^(0x)?[0-9a-f]+$/i },
-      { id: 'json', flags: [ 'j', 'json' ], validator: 'json' },
-      { id: 'json2', flags: [ 'k', 'json2' ], validator: argsjs.validators.json(function(value) {
-        if(typeof value.success != 'undefined') {
-          throw 'Success property must not be defined';
-        }
-        return value;
-      })},
-      { id: 'boolean', flags: [ 'boolean' ], validator: 'boolean' },
-      { id: 'boolean2', flags: [ 'boolean2' ], validator: argsjs.validators.boolean(false) },
-      { id: 'custom', flags: [ 'c', 'custom' ], validator: function(value, option) {
-        if(value === 'night' || value === 'dark') {
-          return 'dark';
-        } else if(value === 'day' || value === 'bright') {
-          return 'bright';
-        } else {
-          throw 'Expected night or day';
-        }
-      }},
-      { id: 'customClass', flags: [ 'l', 'customclass' ], validator: (function() {
-        var SimpleValidator = function(n) {
-          this.n = n;
-        };
-        SimpleValidator.prototype.validate = function(value, option) {
-          if(option.index % this.n !== 0) {
-            throw 'Invalid position';
-          }
-          return value;
-        };
-        return new SimpleValidator(2);
-      })()},
-      { id: 'removeInvalid', flags: [ 'z', 'remove' ], validator: function(value) {
-        if(/^[0-9]+$/.test(value)) {
-          return value;
-        }
-      }, defaultValue: '123' },
-      { id: 'ignoreMe', greedy: true }
-    ]);
+  before(function() {
+    parser = new Parser();
   });
-  teardown(function() {
+  after(function() {
     parser = null;
   });
-  test('Number', function() {
-    var value;
-    assert.doesNotThrow(function() {
-      value = parser.parse([ '-n=5' ]).number;
-    });
-    assert.strictEqual(5, value);
-    assert.doesNotThrow(function() {
-      value = parser.parse([ '-n=3.14' ]).number;
-    });
-    assert.strictEqual(3.14, value);
-    assert.doesNotThrow(function() {
-      value = parser.parse([ '-n=-6.28' ]).number;
-    });
-    assert.strictEqual(-6.28, value);
-    assert.throws(function() {
-      parser.parse([ '-n=5.1.2' ]);
-    }, /Expected/i);
-    assert.throws(function() {
-      parser.parse([ '-n=foo' ]);
-    }, /Expected/i);
-    assert.throws(function() {
-      parser.parse([ '-n=1+2' ]);
-    }, /Expected/i);
+  it('should be invoked by parser.parse on every value', function() {
+    var invocations = {};
+    parser.params([
+      { id: 'foo', validator: function(value) { invocations[value] = true; }, greedy : true }
+    ]);
+    parser.parse([ 'bar', 'baz' ]);
+    expect(invocations).to.have.property('bar');
+    expect(invocations).to.have.property('baz');
   });
-  test('Int', function() {
-    var value;
-    assert.doesNotThrow(function() {
-      value = parser.parse([ '-i=5' ]).int;
-    });
-    assert.strictEqual(5, value);
-    assert.doesNotThrow(function() {
-      value = parser.parse([ '-i=-12' ]).int;
-    });
-    assert.strictEqual(-12, value);
-    assert.throws(function() {
-      parser.parse([ '-i=3.14' ]);
-    }, /Expected/i);
-    assert.throws(function() {
-      parser.parse([ '-i=bar' ]);
-    }, /Expected/i);
+  it('should have access to value and parser information', function() {
+    var checkFnArgs = function(value, data) {
+      expect(arguments).with.length(2);
+      expect(value).to.equal('bar');
+      expect(data).to.have.property('parser')
+        .that.equals(parser);
+      expect(data).to.have.property('param')
+        .with.property('id')
+        .that.equals('foo');
+      expect(data).to.have.property('id')
+        .that.equals('foo');
+      expect(data).to.have.property('sourceType')
+        .that.equals('user');
+      expect(data).to.have.property('index')
+        .that.equals(0);
+      expect(data).to.have.property('result')
+        .that.is.an('object');
+      expect(data).to.have.property('args')
+        .that.is.an('array')
+        .with.length(1);
+    };
+    parser.params([
+      { id: 'foo', validator: checkFnArgs }
+    ]);
+    parser.parse([ 'bar' ]);
   });
-  test('Range', function() {
-    assert.doesNotThrow(function() {
-      parser.parse([ '--intrange=1' ]);
-    });
-    assert.doesNotThrow(function() {
-      parser.parse([ '--intrange=2' ]);
-    });
-    assert.doesNotThrow(function() {
-      parser.parse([ '--intrange=5' ]);
-    });
-    assert.throws(function() {
-      parser.parse([ '--intrange=0' ]);
-    }, /Must be between/i);
-    assert.throws(function() {
-      parser.parse([ '--intrange=6' ]);
-    }, /Must be between/i);
-    assert.throws(function() {
-      parser.parse([ '--intrange=20' ]);
-    }, /Must be between/i);
+  it('should be able to remove values from parser result', function() {
+    parser.params([
+      { id: 'foo',
+        validator: function(value) {
+          if(value.charAt(0) !== 'a') return value;
+        },
+        greedy: true
+      }
+    ]);
+    var ret = parser.parse([ 'foo', 'aBar', 'baz' ]);
+    expect(ret).to.have.property('foo')
+      .that.is.an('array')
+      .and.deep.equals([ 'foo', 'baz' ]);
   });
-  test('Enum', function() {
-    var value;
-    assert.doesNotThrow(function() {
-      value = parser.parse([ '-e=moon' ]).enum;
-    });
-    assert.strictEqual('moon', value);
-    assert.doesNotThrow(function() {
-      value = parser.parse([ '-e=sun' ]).enum;
-    });
-    assert.strictEqual('sun', value);
-    assert.doesNotThrow(function() {
-      value = parser.parse([ '-e=earth' ]).enum;
-    });
-    assert.strictEqual('earth', value);
-    assert.throws(function() {
-      parser.parse([ '-e=saturn' ]);
-    }, /Expected/i);
-    assert.throws(function() {
-      parser.parse([ '-e=pluto' ]);
-    }, /Expected/i);
+  it('should be able to modify values', function() {
+    parser.params([
+      { id: 'foo',
+        validator: function(value) {
+          return 'a' + value.replace(/^(.)/, function(match, c) { return c.toUpperCase(); });
+        }
+      }
+    ]);
+    var ret = parser.parse([ 'bar' ]);
+    expect(ret).to.have.property('foo')
+      .that.equals('aBar');
   });
-  test('Queue (int, enum)', function() {
-    assert.doesNotThrow(function() {
-      parser.parse([ '-q=2' ]);
-    });
-    assert.doesNotThrow(function() {
-      parser.parse([ '-q=3' ]);
-    });
-    assert.throws(function() {
-      parser.parse([ '-q=4' ]);
-    }, /Expected/i);
+  it('should be able to throw errors and stop parsing', function() {
+    parser.params([
+      { id: 'foo',
+        validator: function(){
+          throw 'Foo!';
+        }
+      }
+    ]);
+    expect(function() {
+      parser.parse([ 'bar' ]);
+    }).to.throw(/Foo!/);
   });
-  test('Regular expressions', function() {
-    assert.doesNotThrow(function() {
-      parser.parse([ '-r=0x0123456789abcdef' ]);
-    });
-    assert.doesNotThrow(function() {
-      parser.parse([ '-r=0a' ]);
-    });
-    assert.throws(function() {
-      parser.parse([ '-r=0y0123456789abcdef' ]);
-    }, /Expected/i);
-    assert.throws(function() {
-      parser.parse([ '-r=abcdefg' ]);
-    }, /Expected/i);
-    assert.throws(function() {
-      parser.parse([ '-r=abc def' ]);
-    }, /Expected/i);
+  it('may be objects with a "validate" function', function() {
+    var FooBarValidator = (function() {
+      var Validator = function() {};
+      Validator.prototype.validate = function(value) {
+        if(value !== 'foo' && value !== 'bar')
+          throw 'Expected "foo" or "bar"';
+        return value;
+      };
+      return Validator;
+    })();
+    parser.params([
+      { id: 'foo', validator: new FooBarValidator() }
+    ]);
+    expect(function() {
+      parser.parse([ 'baz' ]);
+    }).to.throw(/foo.*bar/);
   });
-  test('JSON', function() {
-    var value;
-    assert.doesNotThrow(function() {
-      value = parser.parse([ '-j={ "message": "Hello" }' ]).json;
-    });
-    assert.deepEqual({ message: 'Hello' }, value);
-    assert.throws(function() {
-      parser.parse([ '-j=notJSON' ]);
-    }, /JSON/i);
-    assert.throws(function() {
-      parser.parse([ '-k={ "success": true }' ]);
-    }, /Property/i);
+});
+
+describe('Number validator', function() {
+  var parser;
+  before(function() {
+    parser = new Parser();
   });
-  test('Boolean', function() {
-    var value;
-    assert.doesNotThrow(function() {
-      value = parser.parse([ '--boolean=false' ]).boolean;
-    });
-    assert.equal(false, value);
-    assert.doesNotThrow(function() {
-      value = parser.parse([ '--boolean=off' ]).boolean;
-    });
-    assert.equal(false, value);
-    assert.doesNotThrow(function() {
-      value = parser.parse([ '--boolean=f' ]).boolean;
-    });
-    assert.equal(false, value);
-    assert.doesNotThrow(function() {
-      value = parser.parse([ '--boolean=no' ]).boolean;
-    });
-    assert.equal(false, value);
-    assert.doesNotThrow(function() {
-      value = parser.parse([ '--boolean=n' ]).boolean;
-    });
-    assert.equal(false, value);
-    assert.doesNotThrow(function() {
-      value = parser.parse([ '--boolean=true' ]).boolean;
-    });
-    assert.equal(true, value);
-    assert.doesNotThrow(function() {
-      value = parser.parse([ '--boolean=on' ]).boolean;
-    });
-    assert.equal(true, value);
-    assert.doesNotThrow(function() {
-      value = parser.parse([ '--boolean=t' ]).boolean;
-    });
-    assert.equal(true, value);
-    assert.doesNotThrow(function() {
-      value = parser.parse([ '--boolean=yes' ]).boolean;
-    });
-    assert.equal(true, value);
-    assert.doesNotThrow(function() {
-      value = parser.parse([ '--boolean=y' ]).boolean;
-    });
-    assert.equal(true, value);
-    assert.throws(function() {
-      parser.parse([ '--boolean=not on' ]);
-    });
-    assert.doesNotThrow(function() {
-      value = parser.parse([ '--boolean2=true' ]).boolean2;
-    });
-    assert.equal(true, value);
-    assert.doesNotThrow(function() {
-      value = parser.parse([ '--boolean2=false' ]).boolean2;
-    });
-    assert.equal(false, value);
-    assert.throws(function() {
-      parser.parse([ '--boolean2=on' ]);
-    });
-    assert.throws(function() {
-      parser.parse([ '--boolean2=off' ]);
-    });
-    assert.throws(function() {
-      parser.parse([ '--boolean2=t' ]);
-    });
-    assert.throws(function() {
-      parser.parse([ '--boolean2=f' ]);
-    });
+  after(function() {
+    parser = null;
   });
-  test('Custom function', function() {
-    var value;
-    assert.doesNotThrow(function() {
-      value = parser.parse([ '-c=day' ]).custom;
-    });
-    assert.strictEqual('bright', value);
-    assert.doesNotThrow(function() {
-      value = parser.parse([ '-c=dark' ]).custom;
-    });
-    assert.strictEqual('dark', value);
-    assert.throws(function() {
-      parser.parse([ '-c=midnight' ]);
-    }, /Expected/i);
-    assert.throws(function() {
-      parser.parse([ '-c=DARK' ]);
-    }, /Expected/i);
+  it('should be in argsjs.validators', function() {
+    expect(validators).to.have.property('number');
   });
-  test('Custom class', function() {
-    var value;
-    assert.doesNotThrow(function() {
-      value = parser.parse([ '-l=foo' ]).customClass;
-    });
-    assert.strictEqual(value, 'foo');
-    assert.doesNotThrow(function() {
-      value = parser.parse([ 'foo', 'foo', '-l=bar' ]).customClass;
-    });
-    assert.strictEqual(value, 'bar');
-    assert.throws(function() {
-      value = parser.parse([ 'foo', '-l=bar' ]);
-    }, /Position/i);
-    assert.throws(function() {
-      value = parser.parse([ 'foo', 'foo', 'foo', '-l=bar' ]);
-    }, /Position/i);
+  it('should convert values to numbers', function() {
+    parser.params([
+      { id: 'foo', validator: 'number' }
+    ]);
+    var ret = parser.parse([ '12.4' ]);
+    expect(ret.foo).to.be.a('number')
+      .and.to.equal(12.4);
   });
-  test('Remove option', function() {
-    assert.strictEqual('123', parser.parse([ ]).removeInvalid);
-    assert.strictEqual('123', parser.parse([ '-z=notANumber' ]).removeInvalid);
-    assert.strictEqual('321', parser.parse([ '-z=321' ]).removeInvalid);
+  it('should throw an error if a value cannot be converted to a number', function() {
+    parser.params([
+      { id: 'foo', validator: 'number' }
+    ]);
+    expect(function() {
+      parser.parse([ 'foo5' ]);
+    }).to.throw(/Number expected/);
+  });
+  it('should throw custom error messages', function() {
+    parser.params([
+      { id: 'foo', validator: validators.number('custom message') }
+    ]);
+    expect(function() {
+      parser.parse([ 'foo5' ]);
+    }).to.throw(/custom message/);
+  });
+});
+
+describe('Integer validator', function() {
+  var parser;
+  before(function() {
+    parser = new Parser();
+  });
+  after(function() {
+    parser = null;
+  });
+  it('should be in argsjs.validators', function() {
+    expect(validators).to.have.property('int');
+  });
+  it('should convert values to numbers', function() {
+    parser.params([
+      { id: 'foo', validator: 'int' }
+    ]);
+    var ret = parser.parse([ '12' ]);
+    expect(ret.foo).to.be.a('number')
+      .and.to.equal(12);
+  });
+  it('should throw an error if a value cannot be converted to an integer', function() {
+    parser.params([
+      { id: 'foo', validator: 'int' }
+    ]);
+    expect(function() {
+      parser.parse([ '12.4' ]);
+    }).to.throw(/Integer expected/);
+  });
+  it('should throw custom error messages', function() {
+    parser.params([
+      { id: 'foo', validator: validators.int('custom message') }
+    ]);
+    expect(function() {
+      parser.parse([ '12.4' ]);
+    }).to.throw(/custom message/);
+  });
+});
+
+describe('Enum validator', function() {
+  var parser;
+  before(function() {
+    parser = new Parser();
+  });
+  after(function() {
+    parser = null;
+  });
+  it('should be in argsjs.validators', function() {
+    expect(validators).to.have.property('int');
+  });
+  it('should allow a set of values', function() {
+    parser.params([
+      { id: 'foo', validator: [ 'foo', 'bar' ], greedy: true }
+    ]);
+    parser.parse([ 'foo', 'bar' ]);
+  });
+  it('should throw an error if a value is not allowed', function() {
+    parser.params([
+      { id: 'foo', validator: [ 'foo', 'bar' ] }
+    ]);
+    expect(function() {
+      parser.parse([ 'baz' ]);
+    }).to.throw(/Expected/);
+  });
+  it('should throw custom error messages', function() {
+    parser.params([
+      { id: 'foo', validator: validators.enum([ 'foo', 'bar' ], 'custom message') }
+    ]);
+    expect(function() {
+      parser.parse([ 'baz' ]);
+    }).to.throw(/custom message/);
+  });
+});
+
+describe('RegExp validator', function() {
+  var parser;
+  before(function() {
+    parser = new Parser();
+  });
+  after(function() {
+    parser = null;
+  });
+  it('should be in argsjs.validators', function() {
+    expect(validators).to.have.property('regexp');
+  });
+  it('should allow values matching a RegExp', function() {
+    parser.params([
+      { id: 'foo', validator: /b../, greedy: true }
+    ]);
+    parser.parse([ 'bar', 'baz' ]);
+  });
+  it('should throw an error if a value does not match the RegExp', function() {
+    parser.params([
+      { id: 'foo', validator: /b../ }
+    ]);
+    expect(function() {
+      parser.parse([ 'foo' ]);
+    }).to.throw(/Expected/);
+  });
+  it('should throw custom error messages', function() {
+    parser.params([
+      { id: 'foo', validator: validators.regexp(/b../, 'custom message') }
+    ]);
+    expect(function() {
+      parser.parse([ 'foo' ]);
+    }).to.throw(/custom message/);
+  });
+});
+
+describe('JSON validator', function() {
+  var parser;
+  before(function() {
+    parser = new Parser();
+  });
+  after(function() {
+    parser = null;
+  });
+  it('should be in argsjs.validators', function() {
+    expect(validators).to.have.property('json');
+  });
+  it('should convert values to objects', function() {
+    parser.params([
+      { id: 'foo', validator: 'json' }
+    ]);
+    var ret = parser.parse([ '{"num":5}' ]);
+    expect(ret.foo).to.be.an('object')
+      .with.property('num')
+      .that.is.a('number')
+      .and.equals(5);
+  });
+  it('should throw an error if a value is not valid JSON', function() {
+    parser.params([
+      { id: 'foo', validator: 'json' }
+    ]);
+    expect(function() {
+      parser.parse([ '{malformed=true}' ]);
+    }).to.throw(/JSON/);
+  });
+  it('should throw custom error messages', function() {
+    parser.params([
+      { id: 'foo', validator: validators.json('custom message') }
+    ]);
+    expect(function() {
+      parser.parse([ '{malformed=true}' ]);
+    }).to.throw(/custom message/);
+  });
+});
+
+describe('Queue validator', function() {
+  var parser;
+  before(function() {
+    parser = new Parser();
+  });
+  after(function() {
+    parser = null;
+  });
+  it('should be in argsjs.validators', function() {
+    expect(validators).to.have.property('queue');
+  });
+  it('should apply one or more validators on each value', function() {
+    parser.params([
+      { id: 'foo', validator: validators.queue('int', [ 1, 2, 3 ]) }
+    ]);
+    var ret = parser.parse([ '2' ]);
+    expect(ret.foo).to.be.a('number')
+      .that.equals(2);
+    expect(function() {
+      parser.parse([ '4' ]);
+    }).to.throw(/Expected/);
+  });
+});
+
+describe('Range validator', function() {
+  var parser;
+  before(function() {
+    parser = new Parser();
+  });
+  after(function() {
+    parser = null;
+  });
+  it('should be in argsjs.validators', function() {
+    expect(validators).to.have.property('range');
+  });
+  it('should allow values in a specified range', function() {
+    parser.params([
+      { id: 'foo', validator: validators.range('a', 'f') }
+    ]);
+    var ret = parser.parse([ 'd' ]);
+  });
+  it('should throw an error if a value is not in a specified range', function() {
+    parser.params([
+      { id: 'foo', validator: validators.range('a', 'f') }
+    ]);
+    expect(function() {
+      parser.parse([ 'k' ]);
+    }).to.throw(/Must be between/);
+  });
+  it('should throw custom error messages', function() {
+    parser.params([
+      { id: 'foo', validator: validators.range('a', 'f', 'custom message') }
+    ]);
+    expect(function() {
+      parser.parse([ 'k' ]);
+    }).to.throw(/custom message/);
+  });
+});
+
+describe('Boolean validator', function() {
+  var parser;
+  before(function() {
+    parser = new Parser();
+  });
+  after(function() {
+    parser = null;
+  });
+  it('should be in argsjs.validators', function() {
+    expect(validators).to.have.property('boolean');
+  });
+  it('should allow booleans (true, false)', function() {
+    parser.params([
+      { id: 'foo', validator: 'boolean' }
+    ]);
+    var ret = parser.parse([ 'true' ]);
+  });
+  it('should allow other boolean expressions (on, off...) if extended', function() {
+    parser.params([
+      { id: 'foo', validator: 'boolean' }
+    ]);
+    var ret = parser.parse([ 'on' ]);
+  });
+  it('should not allow other boolean expressions if !extended', function() {
+    parser.params([
+      { id: 'foo', validator: validators.boolean(false) }
+    ]);
+    expect(function() {
+      parser.parse([ 'on' ]);
+    }).to.throw(/Boolean/);
+  });
+  it('should throw an error if a value cannot be evaluated to true/false', function() {
+    parser.params([
+      { id: 'foo', validator: 'boolean' }
+    ]);
+    expect(function() {
+      parser.parse([ 'perhaps' ]);
+    }).to.throw(/Boolean/);
+  });
+  it('should throw custom error messages', function() {
+    parser.params([
+      { id: 'foo', validator: validators.boolean('custom message') }
+    ]);
+    expect(function() {
+      parser.parse([ 'perhaps' ]);
+    }).to.throw(/custom message/);
   });
 });
 
