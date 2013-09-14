@@ -16,7 +16,7 @@ describe('Source tracking', function() {
       { id: 'f3', flags: [ 'f3' ], defaultValue: 'def' },
       { id: 'u1' },
       { id: 'u2', defaultValue: 'def' },
-      { id: 'u3', greedy: true }
+      { id: 'u3', multiple: true }
     ]);
   });
   it('should not be enabled if !options.track', function() {

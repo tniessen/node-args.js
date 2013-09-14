@@ -15,7 +15,7 @@ describe('Parameter validators', function() {
   it('should be invoked by parser.parse on every value', function() {
     var invocations = {};
     parser.params([
-      { id: 'foo', validator: function(value) { invocations[value] = true; }, greedy : true }
+      { id: 'foo', validator: function(value) { invocations[value] = true; }, multiple : true }
     ]);
     parser.parse([ 'bar', 'baz' ]);
     expect(invocations).to.have.property('bar');
@@ -53,7 +53,7 @@ describe('Parameter validators', function() {
         validator: function(value) {
           if(value.charAt(0) !== 'a') return value;
         },
-        greedy: true
+        multiple: true
       }
     ]);
     var ret = parser.parse([ 'foo', 'aBar', 'baz' ]);
@@ -191,7 +191,7 @@ describe('Enum validator', function() {
   });
   it('should allow a set of values', function() {
     parser.params([
-      { id: 'foo', validator: [ 'foo', 'bar' ], greedy: true }
+      { id: 'foo', validator: [ 'foo', 'bar' ], multiple: true }
     ]);
     parser.parse([ 'foo', 'bar' ]);
   });
@@ -226,7 +226,7 @@ describe('RegExp validator', function() {
   });
   it('should allow values matching a RegExp', function() {
     parser.params([
-      { id: 'foo', validator: /b../, greedy: true }
+      { id: 'foo', validator: /b../, multiple: true }
     ]);
     parser.parse([ 'bar', 'baz' ]);
   });

@@ -10,7 +10,7 @@ describe('parser.parse', function() {
       { id: 'foo', required: true }
     ]);
     parser2 = new Parser([
-      { id: 'greedyUnflagged', required: false, greedy: true },
+      { id: 'greedyUnflagged', required: false, multiple: true },
       { id: 'flagged', flags: [ 'f', 'flagged' ] },
       { id: 'multipleFlagged', flags: [ 'mf' ], multiple: true },
       { id: 'switch', flags: [ 's', 'switch' ], isSwitch: true },
@@ -67,12 +67,12 @@ describe('parser.parse', function() {
     expect(ret).to.have.property('foo')
       .that.equals('bar');
   });
-  it('should forbid multiple occurrences of unflagged options if !param.greedy', function() {
+  it('should forbid multiple occurrences of unflagged options if !param.multiple', function() {
     expect(function() {
       parser.parse([ 'bar', 'baz' ]);
     }).to.throw();
   });
-  it('should allow multiple occurrences of unflagged options if param.greedy', function() {
+  it('should allow multiple occurrences of unflagged options if param.multiple', function() {
     expect(function() {
       var ret = parser2.parse([ 'bar', 'baz' ]);
     }).to.not.throw();
@@ -121,7 +121,7 @@ describe('parser.parse', function() {
     }).to.not.throw();
     expect(ret.optionalValue).to.equal('yes');
   });
-  it('should use an array if param.multiple || param.greedy', function() {
+  it('should use an array if param.multiple', function() {
     var ret = parser2.parse([ '--ms', '--ms', 'foo', 'bar', 'baz' ]);
     expect(ret.multipleSwitch).to.be.an('array')
       .with.length(2);

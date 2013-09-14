@@ -79,8 +79,7 @@ them through <code>parser.params([ ... ]);</code>.
   <tr><td>isSwitch</td><td>boolean</td><td>Whether this parameter is a switch</td><td>false</td><td>Parameter must be flagged</td></tr>
   <tr><td>optionalValue</td><td>boolean</td><td>Whether this switch accepts optional values</td><td>false</td><td>Parameter must be a switch</td></tr>
   <tr><td>special</td><td>boolean</td><td>If you set this to true <code>Parser.parse</code> will not check if all required parameters were set. This is useful for switches such as <code>--help</code> and <code>--version</code>. These are special options that do not require other parameters to be set.</td><td>false</td><td></td></tr>
-  <tr><td>greedy</td><td>boolean</td><td>Greedy parameters consume as many values as possible: <code>./index.js inputFile1 ... inputFileN</code></td><td>false</td><td>Parameter must not be flagged, <code>result[id]</code> is an array of values</td></tr>
-  <tr><td>multiple</td><td>boolean</td><td>This parameter may be declared multiple times.</td><td>false</td><td>Parameter must be flagged, <code>result[id]</code> is an array of values</td></tr>
+  <tr><td>multiple</td><td>boolean</td><td>This parameter may be declared multiple times.</td><td>false</td><td><code>result[id]</code> is an array of values</td></tr>
   <tr><td>defaultValue</td><td>any</td><td>Default value of this parameter. <code>result[id]</code> will be set to this if no user-specified value exists.</td><td>null</td><td></td></tr>
   <tr><td>help</td><td>string</td><td>Help message to display for this parameter.</td><td>null</td><td></td></tr>
   <tr><td>usage</td><td>string</td><td>Usage to display for this parameter.</td><td>null</td><td></td></tr>
@@ -93,7 +92,7 @@ The following table demonstrates some features of the parser. See above for info
 <table>
   <tr><th>Parameter definition</th><th>Example arguments</th></tr>
   <tr><td><code>{ id: 'inputFile' }</code></td><td><code>test.txt</code></td></tr>
-  <tr><td><code>{ id: 'inputFiles', greedy: true }</code></td><td><code>test.txt summary.txt</code></td></tr>
+  <tr><td><code>{ id: 'inputFiles', multiple: true }</code></td><td><code>test.txt summary.txt</code></td></tr>
   <tr><td><code>{ id: 'outputFile', flags: [ 'o', 'output' ] }</code></td><td><code>-o test.txt</code><br/><code>--output test.txt</code></td></tr>
   <tr><td><code>{ id: 'optimization', flags: [ 'O', 'optimize' ],<br/>multiple: true }</code></td><td><code>--optimize functions</code><br /><code>--optimize functions --optimize vars</code><br /><code>-O functions -O vars</code><br/><code>-Ofunctions -Ovars</code><br /><code>-O=functions --optimize:vars</code></td></tr>
   <tr><td><code>{ id: 'verbose', flags: [ 'v', 'verbose' ],<br/>isSwitch: true }</code></td><td><code>-v</code><br/><code>--verbose</code></td></tr>
@@ -199,7 +198,7 @@ This adds a property (<code>$.source</code>) to the returned object which holds 
 
 var parser = new Parser([
   { id: 'outputFile', flags: [ 'o', 'output' ], defaultValue: 'out.js' },
-  { id: 'inputFiles', greedy: true, required: true }
+  { id: 'inputFiles', multiple: true, required: true }
 ]);
 
 console.log(parser.parse([ 'test.js' ], { track: true }));
