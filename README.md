@@ -55,7 +55,7 @@ them through <code>parser.params([ ... ]);</code>.
     <th>Unflagged parameters</th>
   </tr>
   <tr>
-    <td>Defition</td>
+    <td>Definition</td>
     <td><code>{ flags: [ '-o', '--output' ],
 <br/>&nbsp;&nbsp;&nbsp;... }</code></td>
     <td><code>{ flags: [ '-v', '--verbose' ],
@@ -313,13 +313,13 @@ var ListValidator = (function() {
 var parser = new Parser([
   { id: 'ports', validator: new ListValidator(), flags: [ 'p', 'ports' ] }
 ]);
-</pre></code>
+</code></pre>
 
 #### Actions
 In some cases it might be useful to use validators as actions:
 <pre><code>
 { id: 'help', flags: [ 'help' ], isSwitch: true, special: true,
-    validator: function() {
+    validator: function(value, data) {
       console.log('./mytool ' + parser.usage());
       console.log('Options:');
       console.log(data.parser.help().replace(/(^|\n)/g, '$1    '));
