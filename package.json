@@ -14,5 +14,12 @@
     "command",
     "parser"
   ],
-  "license": "CC BY-NC 3.0"
+  "license": "CC BY-NC 3.0",
+  "scripts": {
+    "test": "mocha -R spec ./test"
+  },
+  "devDependencies": {
+    "chai": "^3.0.0",
+    "mocha": "^2.2.5"
+  }
 }
