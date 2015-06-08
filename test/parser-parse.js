@@ -164,7 +164,7 @@ describe('parser.parse', function() {
     ret = parser2.parse([ '-f=bar' ]);
     expect(ret.flagged).to.equal('bar');
   });
-  it('should use default values if an options was net set', function() {
+  it('should use default values if an options was not set', function() {
     var ret = parser2.parse([]);
     expect(ret.greedyUnflagged).to.equal(null);
     expect(ret.flagged).to.equal(null);
