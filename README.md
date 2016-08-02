@@ -1,5 +1,6 @@
 args.js
 =======
+[![Build Status](https://travis-ci.org/tniessen/args.js.svg?branch=master)](https://travis-ci.org/tniessen/args.js)
 
 **args.js** is yet another command line option parser for Node.js.
 
