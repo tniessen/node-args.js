@@ -2,7 +2,6 @@
 --ui bdd
 --reporter spec
 --slow 10
---timeout 50
 --require chai
 
 test/module.js

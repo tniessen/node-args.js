@@ -2,7 +2,6 @@ args.js
 =======
 
 **args.js** is yet another command line option parser for Node.js.
-This documentation is still incomplete but args.js is under active development. Please take a look at the unit tests for more examples.
 
 
 ## Installation
