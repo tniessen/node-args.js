@@ -19,29 +19,35 @@ describe('Error objects', function() {
     }).to.throw(argsjs.ParserError);
   });
   it('should have a "message" property (string)', function() {
-    parser.parse([], function(err, result) {
-      expect(err).to.have.property('message')
-        .that.is.a('string');
-    });
+    try {
+      parser.parse([]);
+    } catch(err) {
+      expect(err).to.have.property('message').that.is.a('string');
+    }
   });
   it('should have a "parser" property', function() {
-    parser.parse([], function(err, result) {
-      expect(err).to.have.property('parser')
-        .that.equals(parser);
-    });
+    try {
+      parser.parse([]);
+    } catch(err) {
+      expect(err).to.have.property('parser').that.equals(parser);
+    }
   });
   it('should have a "reason" property', function() {
-    parser.parse([], function(err, result) {
+    try {
+      parser.parse([]);
+    } catch(err) {
       expect(err).to.have.property('reason');
-    });
+    }
   });
   it('should support "toString"', function() {
-    parser.parse([], function(err, result) {
+    try {
+      parser.parse([]);
+    } catch(err) {
       var msg = err.toString();
       expect(msg).to.contain('ParserError')
         .and.to.contain('Missing')
         .and.to.contain('requiredParam');
-    });
+    }
   });
 });
 

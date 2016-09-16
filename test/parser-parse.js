@@ -30,34 +30,11 @@ describe('parser.parse', function() {
     expect(result).to.have.property('foo')
       .that.equals('aProcessArg');
   });
-  it('should pass result to callback', function() {
-    var value;
-    parser.parse([ 'bar' ], function(err, v) {
-      expect(err).to.not.exist;
-      value = v;
-    });
-    expect(value).to.exist.and.to.have.property('foo')
-      .that.equals('bar');
-  });
-  it('should pass errors to callback', function() {
-    var error;
-    parser.parse([], function(err, v) {
-      error = err;
-    });
-    expect(error).to.exist
-      .and.to.have.property('reason');
-  });
-  it('should return the parser when using a callback', function() {
-    var ret = parser.parse([ 'bar' ], function(err, v) {
-      // Ignore everything
-    });
-    expect(ret).to.equal(parser);
-  });
-  it('should return the parser result unless using a callback', function() {
+  it('should return the parser result', function() {
     var ret = parser.parse([ 'bar' ]);
     expect(ret).to.have.property('foo');
   });
-  it('should throw errors unless using a callback', function() {
+  it('should throw errors', function() {
     expect(function() {
       parser.parse([]);
     }).to.throw(argsjs.ParserError);

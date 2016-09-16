@@ -326,22 +326,3 @@ In some cases it might be useful to use validators as actions:
       process.exit(0);
     }, help: 'Shows this message' }
 </code></pre>
-
-
-## Callback style
-
-It is also possible to use callbacks with <code>parser.parse</code>:
-<pre><code>
-parser.parse(function(err, result) {
-  if(err) {
-    console.error(err.message);
-    process.exit(2);
-  }
-  ...
-});
-</code></pre>
-Please note that this operation is synchronous.
-
-You can pass options and the arguments to parse before or after the
-callback.
-

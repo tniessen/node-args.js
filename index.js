@@ -42,10 +42,10 @@ module.exports.createParser = function(params) {
 };
 
 /**
- * ### argsjs.parse(params, [args], [options], [callback])
+ * ### argsjs.parse(params, [args], [options])
  * Creates a new Parser and parses the given arguments.
  */
-module.exports.parse = function(params, args, options, callback) {
-  return new module.exports.Parser(params).parse(args, options, callback);
+module.exports.parse = function(params, args, options) {
+  return new module.exports.Parser(params).parse(args, options);
 };
 
